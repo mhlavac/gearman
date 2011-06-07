@@ -122,6 +122,19 @@ class Net_Gearman_Client
             $send = $args[0];
         }
 
+        return $this->call($func, $send);
+    }
+
+    /**
+     * Fire off a background task with the given arguments
+     *
+     * @param string $func Name of job to run
+     * @param array  $args First key should be args to send
+     * @param func
+     * @param send
+     */
+    public function call($func, $send)
+    {
         $task       = new Net_Gearman_Task($func, $send);
         $task->type = Net_Gearman_Task::JOB_BACKGROUND;
 
@@ -130,6 +143,7 @@ class Net_Gearman_Client
         $this->runSet($set);
         return $task->handle;
     }
+
 
     /**
      * Submit a task to Gearman
