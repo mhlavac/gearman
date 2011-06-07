@@ -20,8 +20,6 @@
  * @link      http://www.danga.com/gearman/
  */
 
-require_once 'Net/Gearman/Exception.php';
-
 /**
  * Create jobs based on a map of function to class name.
  *

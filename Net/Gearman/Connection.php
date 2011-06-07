@@ -21,8 +21,6 @@
  * @link      http://www.danga.com/gearman/
  */
 
-require_once 'Net/Gearman/Exception.php';
-
 /**
  * The base connection class
  *
