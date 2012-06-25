@@ -154,8 +154,8 @@ class Net_Gearman_Connection
             if ($socket_connected) {
                 socket_set_nonblock($socket);
                 socket_set_option($socket, SOL_TCP, 1, 1);
-                $timeLeft = ((microtime(true) - $start) * 1000);
             }
+            $timeLeft = ((microtime(true) - $start) * 1000);
         } while (!$socket_connected && $timeLeft < $timeout);
 
         if (!$socket_connected) {
