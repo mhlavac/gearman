@@ -24,7 +24,7 @@
             "name": "Martin Hlavac",
             "homepage": "http://www.mhlavac.net"
         }
-    ]
+    ],
     "require": {
         "php": ">=5.4.4"
     }
