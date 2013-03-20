@@ -1,6 +1,8 @@
 Net/Gearman
 ===========
 
+[![Build Status](https://secure.travis-ci.org/Publero/net_gearman.png?branch=master)](http://travis-ci.org/Publero/net_gearman)
+
 PHP library for interfacing with Danga's Gearman. Gearman is a system to farm out work to other machines,
 dispatching function calls to machines that are better suited to do work, to do work in parallel, to load
 balance lots of function calls, or to call functions between languages. 
