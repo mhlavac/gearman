@@ -1,8 +1,10 @@
 <?php
+namespace Net\Gearman;
+
 /**
  * Interface for Danga's Gearman job scheduling system
  *
- * PHP version 5.1.0+
+ * PHP version 5.4.4+
  *
  * LICENSE: This source file is subject to the New BSD license that is
  * available through the world-wide-web at the following URI:
@@ -59,7 +61,7 @@
  * @link      http://www.danga.com/gearman/
  * @see       Net_Gearman_Job, Net_Gearman_Connection
  */
-class Net_Gearman_Worker
+class Worker
 {
     /**
      * Pool of connections to Gearman servers
@@ -146,7 +148,7 @@ class Net_Gearman_Worker
         } elseif (!is_array($servers) && strlen($servers)) {
             $servers = array($servers);
         } elseif (is_array($servers) && !count($servers)) {
-            throw new Net_Gearman_Exception('Invalid servers specified');
+            throw new Exception('Invalid servers specified');
         }
 
         if(empty($id)){
@@ -157,20 +159,20 @@ class Net_Gearman_Worker
 
         foreach ($servers as $s) {
             try {
-                $conn = Net_Gearman_Connection::connect($s);
+                $conn = Connection::connect($s);
 
-                Net_Gearman_Connection::send($conn, "set_client_id", array("client_id" => $this->id));
+                Connection::send($conn, "set_client_id", array("client_id" => $this->id));
 
                 $this->conn[$s] = $conn;
 
-            } catch (Net_Gearman_Exception $e) {
+            } catch (\Exception $e) {
 
                 $this->retryConn[$s] = time();
             }
         }
 
         if (empty($this->conn)) {
-            throw new Net_Gearman_Exception(
+            throw new Exception(
                 "Couldn't connect to any available servers"
             );
         }
@@ -194,7 +196,7 @@ class Net_Gearman_Worker
     public function setJobFactory($callable)
     {
         if (!is_callable($callable)) {
-            throw new InvalidArgumentException('Callback is not callable');
+            throw new \InvalidArgumentException('Callback is not callable');
         }
         $this->jobFactory = $callable;
     }
@@ -223,7 +225,7 @@ class Net_Gearman_Worker
         $this->abilities[$ability] = $timeout;
 
         foreach ($this->conn as $conn) {
-            Net_Gearman_Connection::send($conn, $call, $params);
+            Connection::send($conn, $call, $params);
         }
     }
 
@@ -262,7 +264,7 @@ class Net_Gearman_Worker
                 $worked = false;
                 try {
                     $worked = $this->doWork($socket);
-                } catch (Net_Gearman_Exception $e) {
+                } catch (\Exception $e) {
                     unset($this->conn[$server]);
                     $this->retryConn[$server] = $currentTime;
                 }
@@ -275,7 +277,7 @@ class Net_Gearman_Worker
             $idle = false;
             if ($sleep && count($this->conn)) {
                 foreach ($this->conn as $socket) {
-                    Net_Gearman_Connection::send($socket, 'pre_sleep');
+                    Connection::send($socket, 'pre_sleep');
                 }
 
                 $read = $this->conn;
@@ -287,12 +289,12 @@ class Net_Gearman_Worker
             foreach ($this->retryConn as $s => $lastTry) {
                 if (($lastTry + $retryTime) < $currentTime) {
                     try {
-                        $conn = Net_Gearman_Connection::connect($s);
+                        $conn = Connection::connect($s);
                         $this->conn[$s]         = $conn;
                         $retryChange            = true;
                         unset($this->retryConn[$s]);
-                        Net_Gearman_Connection::send($conn, "set_client_id", array("client_id" => $this->id));
-                    } catch (Net_Gearman_Exception $e) {
+                        Connection::send($conn, "set_client_id", array("client_id" => $this->id));
+                    } catch (Exception $e) {
                         $this->retryConn[$s] = $currentTime;
                     }
                 }
@@ -333,11 +335,11 @@ class Net_Gearman_Worker
      */
     protected function doWork($socket)
     {
-        Net_Gearman_Connection::send($socket, 'grab_job');
+        Connection::send($socket, 'grab_job');
 
         $resp = array('function' => 'noop');
         while (count($resp) && $resp['function'] == 'noop') {
-            $resp = Net_Gearman_Connection::blockingRead($socket);
+            $resp = Connection::blockingRead($socket);
         }
 
         if (in_array($resp['function'], array('noop', 'no_job'))) {
@@ -353,7 +355,7 @@ class Net_Gearman_Worker
         $arg    = array();
 
         if (isset($resp['data']['arg']) &&
-            Net_Gearman_Connection::stringLength($resp['data']['arg'])) {
+            Connection::stringLength($resp['data']['arg'])) {
             $arg = json_decode($resp['data']['arg'], true);
             if($arg === null){
                 $arg = $resp['data']['arg'];
@@ -372,7 +374,7 @@ class Net_Gearman_Worker
 
             $job->complete($res);
             $this->complete($handle, $name, $res);
-        } catch (Net_Gearman_Job_Exception $e) {
+        } catch (JobException $e) {
             $job->fail();
             $this->fail($handle, $name, $e);
         }
@@ -396,10 +398,10 @@ class Net_Gearman_Worker
     public function attachCallback($callback, $type = self::JOB_COMPLETE)
     {
         if (!is_callable($callback)) {
-            throw new Net_Gearman_Exception('Invalid callback specified');
+            throw new Exception('Invalid callback specified');
         }
         if (!isset($this->callback[$type])) {
-            throw new Net_Gearman_Exception('Invalid callback type specified.');
+            throw new Exception('Invalid callback type specified.');
         }
         $this->callback[$type][] = $callback;
     }
@@ -472,7 +474,7 @@ class Net_Gearman_Worker
     public function endWork()
     {
         foreach ($this->conn as $conn) {
-            Net_Gearman_Connection::close($conn);
+            Connection::close($conn);
         }
     }
 

@@ -1,8 +1,12 @@
 <?php
+namespace Net\Gearman;
+
+use Net\Gearman\Job\JobException;
+use Net\Gearman\Job\CommonJob;
 /**
  * Interface for Danga's Gearman job scheduling system
  *
- * PHP version 5.1.0+
+ * PHP version 5.4.4+
  *
  * LICENSE: This source file is subject to the New BSD license that is
  * available through the world-wide-web at the following URI:
@@ -33,9 +37,9 @@
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @version   Release: @package_version@
  * @link      http://www.danga.com/gearman/
- * @see       Net_Gearman_Job_Common, Net_Gearman_Worker
+ * @see       Net\Gearman\Job\Common, Net\Gearman\Worker
  */
-class Net_Gearman_MappedJobFactory
+class MappedJobFactory
 {
     /**
      * Map of function to class name
@@ -93,7 +97,7 @@ class Net_Gearman_MappedJobFactory
     public function getJobClassName($job)
     {
         if (!isset($this->map[$job])) {
-            throw new Net_Gearman_Job_Exception('Job not found');
+            throw new JobException('Job not found');
         }
 
         return $this->map[$job];
@@ -102,13 +106,13 @@ class Net_Gearman_MappedJobFactory
     /**
      * Copy map of jobs into worker as abilities for the worker
      *
-     * @param Net_Gearman_Worker $worker     Worker object to add abilities to
+     * @param Worker             $worker     Worker object to add abilities to
      * @param array              $initParams Parameters for job constructor
      *                                       as per $worker->addAbility
      *
      * @return void
      */
-    public function mapToWorker(Net_Gearman_Worker $worker, $initParams = array())
+    public function mapToWorker(Worker $worker, $initParams = array())
     {
         foreach ($this->map as $job => $class) {
             $worker->addAbility($job, null, $initParams);
@@ -124,21 +128,21 @@ class Net_Gearman_MappedJobFactory
      * status from there on out.
      *
      * @param string $job        Name of job (func in Gearman terms)
-     * @param object $conn       Instance of Net_Gearman_Connection
+     * @param object $conn       Instance of Net\Gearman\Connection
      * @param string $handle     Gearman job handle of job
      * @param array  $initParams initialisation parameters for job
      *
-     * @return object Instance of Net_Gearman_Job_Common child
-     * @see Net_Gearman_Job_Common
-     * @throws Net_Gearman_Exception
+     * @return object Instance of Net\Gearman\Job\CommonJob child
+     * @see Net\Gearman\Job\CommonJob
+     * @throws Net\Gearman\Exception
      */
     public function factory($job, $conn, $handle, $initParams=array())
     {
         $class = $this->getJobClassName($job);
 
         $instance = new $class($conn, $handle, $initParams);
-        if (!$instance instanceof Net_Gearman_Job_Common) {
-            throw new Net_Gearman_Job_Exception('Job is of invalid type');
+        if (!$instance instanceof CommonJob) {
+            throw new JobException('Job is of invalid type');
         }
 
         return $instance;

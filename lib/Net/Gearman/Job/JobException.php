@@ -1,9 +1,12 @@
 <?php
+namespace Net\Gearman\Job;
+
+use Net\Gearman\Exception;
 
 /**
  * Interface for Danga's Gearman job scheduling system
  *
- * PHP version 5.1.0+
+ * PHP version 5.4.4+
  *
  * LICENSE: This source file is subject to the New BSD license that is
  * available through the world-wide-web at the following URI:
@@ -22,17 +25,21 @@
  */
 
 /**
- * Exception class for Net_Gearman
+ * Exception class for Gearman jobs
+ *
+ * Your Gearman jobs should throw this from their run() method if they run
+ * into any kind of error.
  *
  * @category  Net
  * @package   Net_Gearman
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
- * @link      http://www.danga.com/gearman/
  * @version   Release: @package_version@
- * @see       PEAR_Exception
+ * @link      http://www.danga.com/gearman/
+ * @see       Net_Gearman_Job_Common, Net_Gearman_Worker
  */
-class Net_Gearman_Exception extends PEAR_Exception
+class JobException extends Exception
 {
+
 }

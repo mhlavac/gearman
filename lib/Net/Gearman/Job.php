@@ -1,9 +1,12 @@
 <?php
+namespace Net\Gearman;
 
+use Net\Gearman\Job\CommonJob;
+use Net\Gearman\Job\JobException;
 /**
  * Interface for Danga's Gearman job scheduling system
  *
- * PHP version 5.1.0+
+ * PHP version 5.4.4+
  *
  * LICENSE: This source file is subject to the New BSD license that is
  * available through the world-wide-web at the following URI:
@@ -42,9 +45,9 @@ if (!defined('NET_GEARMAN_JOB_CLASS_PREFIX')) {
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @link      http://www.danga.com/gearman/
  * @version   Release: @package_version@
- * @see       Net_Gearman_Job_Common, Net_Gearman_Worker
+ * @see       Net\Gearman\Job\CommonJob, Net\Gearman\Worker
  */
-abstract class Net_Gearman_Job
+abstract class Job
 {
     /**
      * Create an instance of a job
@@ -54,27 +57,27 @@ abstract class Net_Gearman_Job
      * which made the request for the job so that the job can communicate its
      * status from there on out.
      *
-     * @param string $job    Name of job (func in Gearman terms)
-     * @param object $conn   Instance of Net_Gearman_Connection
-     * @param string $handle Gearman job handle of job
-     * @param string $initParams initialisation parameters for job
+     * @param string                 $job    Name of job (func in Gearman terms)
+     * @param Net\Gearman\Connection $conn   Instance of Net\Gearman\Connection
+     * @param string                 $handle Gearman job handle of job
+     * @param string                 $initParams initialisation parameters for job
      *
-     * @return object Instance of Net_Gearman_Job_Common child
-     * @see Net_Gearman_Job_Common
-     * @throws Net_Gearman_Exception
+     * @return object Instance of Net\Gearman\Job\CommonJob child
+     * @see Net\Gearman\Job\CommonJob
+     * @throws Net\Gearman\Exception
      */
-    static public function factory($job, $conn, $handle, $initParams=array())
+    static public function factory($job, Connection $conn, $handle, $initParams=array())
     {
         $file = NET_GEARMAN_JOB_PATH . '/' . $job . '.php';
         include_once $file;
         $class = NET_GEARMAN_JOB_CLASS_PREFIX . $job;
         if (!class_exists($class)) {
-            throw new Net_Gearman_Job_Exception('Invalid Job class');
+            throw new JobException('Invalid Job class');
         }
 
         $instance = new $class($conn, $handle, $initParams);
-        if (!$instance instanceof Net_Gearman_Job_Common) {
-            throw new Net_Gearman_Job_Exception('Job is of invalid type');
+        if (!$instance instanceof CommonJob) {
+            throw new JobException('Job is of invalid type');
         }
 
         return $instance;

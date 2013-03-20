@@ -1,9 +1,10 @@
 <?php
+namespace Net\Gearman\Job;
 
 /**
  * Interface for Danga's Gearman job scheduling system
  *
- * PHP version 5.1.0+
+ * PHP version 5.4.4+
  *
  * LICENSE: This source file is subject to the New BSD license that is
  * available through the world-wide-web at the following URI:
@@ -31,9 +32,9 @@
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @version   Release: @package_version@
  * @link      http://www.danga.com/gearman/
- * @see       Net_Gearman_Job_Common, Net_Gearman_Worker
+ * @see       \Net\Gearman\Job\CommonJob, \Net\Gearman\Worker
  */
-abstract class Net_Gearman_Job_Common
+abstract class CommonJob
 {
     /**
      * Gearman job handle
