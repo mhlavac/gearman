@@ -16,11 +16,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * When no server is supplied, it should connect to localhost:4730.
-     *
-     * @return void
      */
     public function testDefaultConnect()
     {
+        return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
+
         $connection = Connection::connect();
         $this->assertInternalType('resource', $connection);
         $this->assertEquals('socket', strtolower(get_resource_type($connection)));
@@ -30,13 +30,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         Connection::close($connection);
     }
 
-    /**
-     * 001-echo_req.phpt
-     *
-     * @return void
-     */
     public function testSend()
     {
+        return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
+
         $connection = Connection::connect();
         Connection::send($connection, 'echo_req', array('text' => 'foobar'));
 
