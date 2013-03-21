@@ -85,6 +85,11 @@ class Worker
     protected $abilities = array();
 
     /**
+     * @var array List of servers
+     */
+    protected $servers = [];
+
+    /**
      * Parameters for job contructors, indexed by ability name
      *
      * @var array $initParams
@@ -96,7 +101,7 @@ class Worker
      *
      * @var callback
      */
-    protected $jobFactory = array('Net_Gearman_Job', 'factory');
+    protected $jobFactory = array('Net\Gearman\Job', 'factory');
 
     /**
      * Callbacks registered for this worker
@@ -151,31 +156,29 @@ class Worker
             throw new Exception('Invalid servers specified');
         }
 
+        $this->servers = $servers;
+
         if(empty($id)){
             $id = "pid_".getmypid()."_".uniqid();
         }
 
         $this->id = $id;
+    }
 
-        foreach ($servers as $s) {
-            try {
-                $conn = Connection::connect($s);
+    /**
+     * @param string $host
+     * @param int $port
+     * @return Worker
+     */
+    public function addServer($host, $port)
+    {
+        $this->servers[] = $host . ':' . $port;
 
-                Connection::send($conn, "set_client_id", array("client_id" => $this->id));
+        return $this;
+    }
 
-                $this->conn[$s] = $conn;
-
-            } catch (\Exception $e) {
-
-                $this->retryConn[$s] = time();
-            }
-        }
-
-        if (empty($this->conn)) {
-            throw new Exception(
-                "Couldn't connect to any available servers"
-            );
-        }
+    public function addServers()
+    {
     }
 
     /**
@@ -229,6 +232,30 @@ class Worker
         }
     }
 
+
+    public function work()
+    {
+        foreach ($servers as $s) {
+            try {
+                $conn = Connection::connect($s);
+
+                Connection::send($conn, "set_client_id", array("client_id" => $this->id));
+
+                $this->conn[$s] = $conn;
+
+            } catch (\Exception $e) {
+
+                $this->retryConn[$s] = time();
+            }
+        }
+
+        if (empty($this->conn)) {
+            throw new Exception(
+                    "Couldn't connect to any available servers"
+            );
+        }
+    }
+
     /**
      * Begin working
      *
@@ -241,8 +268,8 @@ class Worker
      * @param callback $monitor Function to monitor work
      *
      * @return void
-     * @see Net_Gearman_Connection::send(), Net_Gearman_Connection::connect()
-     * @see Net_Gearman_Worker::doWork(), Net_Gearman_Worker::addAbility()
+     * @see Net\Gearman\Connection::send(), Net\Gearman\Connection::connect()
+     * @see Net\Gearman\Worker::doWork(), Net\Gearman\Worker::addAbility()
      */
     public function beginWork($monitor = null)
     {
