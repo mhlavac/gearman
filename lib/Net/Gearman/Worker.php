@@ -78,23 +78,14 @@ class Worker
     protected $retryConn = array();
 
     /**
-     * Pool of worker abilities
-     *
-     * @var array $conn
+     * @var callback[] $functions
      */
-    protected $abilities = array();
+    protected $functions = [];
 
     /**
-     * @var array List of servers
+     * @var string[] List of servers
      */
     protected $servers = [];
-
-    /**
-     * Parameters for job contructors, indexed by ability name
-     *
-     * @var array $initParams
-     */
-    protected $initParams = array();
 
     /**
      * Job Factory
@@ -107,9 +98,9 @@ class Worker
      * Callbacks registered for this worker
      *
      * @var array $callback
-     * @see Net_Gearman_Worker::JOB_START
-     * @see Net_Gearman_Worker::JOB_COMPLETE
-     * @see Net_Gearman_Worker::JOB_FAIL
+     * @see Net\Gearman\Worker::JOB_START
+     * @see Net\Gearman\Worker::JOB_COMPLETE
+     * @see Net\Gearman\Worker::JOB_FAIL
      */
     protected $callback = array(
         self::JOB_START     => array(),
@@ -124,7 +115,6 @@ class Worker
      */
     protected $id = "";
 
-
     /**
      * Callback types
      *
@@ -137,27 +127,12 @@ class Worker
     const JOB_FAIL     = 3;
 
     /**
-     * Constructor
-     *
-     * @param array $servers List of servers to connect to
-     * @param string $id     Optional unique id for this worker
+     * @param string $id Optional unique id for this worker
      *
      * @return void
-     * @throws Net_Gearman_Exception
-     * @see Net_Gearman_Connection
      */
-    public function __construct($servers = null, $id = "")
+    public function __construct($id = "")
     {
-        if (is_null($servers)){
-            $servers = array("localhost");
-        } elseif (!is_array($servers) && strlen($servers)) {
-            $servers = array($servers);
-        } elseif (is_array($servers) && !count($servers)) {
-            throw new Exception('Invalid servers specified');
-        }
-
-        $this->servers = $servers;
-
         if(empty($id)){
             $id = "pid_".getmypid()."_".uniqid();
         }
@@ -166,19 +141,147 @@ class Worker
     }
 
     /**
+     * @return string[]
+     */
+    public function getServers()
+    {
+        return array_keys($this->servers);
+    }
+
+    /**
      * @param string $host
      * @param int $port
-     * @return Worker
+     * @throws \InvalidArgumentException
+     * @return self
      */
-    public function addServer($host, $port)
+    public function addServer($host = null , $port = null)
     {
-        $this->servers[] = $host . ':' . $port;
+        if (null === $host) {
+            $host = 'localhost';
+        }
+        if (null === $port) {
+            $port = $this->getDefaultPort();
+        }
+
+        $server = $host . ':' . $port;
+
+        if (isset($this->servers[$server])) {
+            throw new \InvalidArgumentException("Server '$server' is already register");
+        }
+
+        $this->servers[$server] = true;
 
         return $this;
     }
 
-    public function addServers()
+    /**
+     * @param string[] $servers
+     * @throws \InvalidArgumentException
+     * @return self
+     */
+    public function addServers(array $servers)
     {
+        foreach ($servers as $server) {
+            if (false === strpos($server, ':')) {
+                $server .= ':' . $this->getDefaultPort();
+            }
+            if (isset($this->servers[$server])) {
+                throw new \InvalidArgumentException("Server '$server' is already register");
+            }
+
+            $this->servers[$server] = true;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getDefaultPort()
+    {
+        return 4730;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getFunctions()
+    {
+        return $this->functions;
+    }
+
+    /**
+     * @param string $functionName
+     * @param callback $callback
+     * @param int $timeout
+     * @throws \InvalidArgumentException
+     * @return self
+     */
+    public function addFunction($functionName, $callback, $timeout = null)
+    {
+        if (isset($this->functions[$functionName])) {
+            throw new \InvalidArgumentException("Function $functionName is already registered");
+        }
+
+        $this->functions[$functionName] = ['callback' => $callback];
+        if (null !== $timeout) {
+            $this->functions[$functionName]['timeout'] = $timeout;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string
+     * @throws \InvalidArgumentException
+     * @return self
+     */
+    public function unregister($functionName)
+    {
+        if (!isset($this->functions[$functionName])) {
+            throw new \InvalidArgumentException("Function $functionName is not registered");
+        }
+
+        unset($this->functions[$functionName]);
+
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function unregisterAll()
+    {
+        $this->functions = [];
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function work()
+    {
+        /*foreach ($servers as $s) {
+            try {
+                $conn = Connection::connect($s);
+
+                Connection::send($conn, "set_client_id", array("client_id" => $this->id));
+
+                $this->conn[$s] = $conn;
+
+            } catch (\Exception $e) {
+
+                $this->retryConn[$s] = time();
+            }
+        }
+
+        if (empty($this->conn)) {
+            throw new Exception(
+                    "Couldn't connect to any available servers"
+            );
+        }*/
     }
 
     /**
@@ -229,30 +332,6 @@ class Worker
 
         foreach ($this->conn as $conn) {
             Connection::send($conn, $call, $params);
-        }
-    }
-
-
-    public function work()
-    {
-        foreach ($servers as $s) {
-            try {
-                $conn = Connection::connect($s);
-
-                Connection::send($conn, "set_client_id", array("client_id" => $this->id));
-
-                $this->conn[$s] = $conn;
-
-            } catch (\Exception $e) {
-
-                $this->retryConn[$s] = time();
-            }
-        }
-
-        if (empty($this->conn)) {
-            throw new Exception(
-                    "Couldn't connect to any available servers"
-            );
         }
     }
 
