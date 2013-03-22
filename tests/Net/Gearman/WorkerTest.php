@@ -166,16 +166,18 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->worker->getFunctions());
     }
 
-    public function testWorker()
+    /*public function testWorker()
     {
-        $function = function($job) {
-            return strrev($job->workload);
+        $function = function($payload) {
+            $arg = str_replace('java', 'php', $arg);
+
+            return [$arg];
         };
 
         $worker = new Worker();
         $worker->addServer();
-        $worker->addFunction('reverse', $function);
+        $worker->addFunction('replace', $function);
 
         $worker->work();
-    }
+    }*/
 }

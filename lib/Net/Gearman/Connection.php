@@ -202,9 +202,11 @@ class Connection
 
         $d = implode("\x00", $data);
 
-        $cmd = "\0REQ" . pack("NN",
-                              self::$commands[$command][0],
-                              self::stringLength($d)) . $d;
+        $cmd = "\0REQ" . pack(
+            "NN",
+            self::$commands[$command][0],
+            self::stringLength($d)
+        ) . $d;
 
         $cmdLength = self::stringLength($cmd);
         $written = 0;
