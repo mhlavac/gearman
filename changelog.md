@@ -6,3 +6,4 @@
 * Added LICENSE file
 * Updated README file
 * Added Travis-CI support
+* Worker ha almost identical API as 1.1.1 PECL gearman library

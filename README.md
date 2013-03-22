@@ -35,33 +35,20 @@ $client->someBackgroundJob([
 ]);
 ```
 
-### Job
-
-``` php
-<?php
-
-class Net_Gearman_Job_someBackgroundJob extends Net\Gearman\Job\CommonJob
-{
-    public function run($args)
-    {
-        if (!isset($args['userid']) || !isset($args['action'])) {
-            throw new Net\Gearman\Job\JobException('Invalid/Missing arguments');
-        }
-
-        // Insert a record or something based on the $args
-
-        return []; // Results are returned to Gearman, except for 
-                   // background jobs like this one.
-    }
-}
-```
-
 ### Worker
 
 ``` php
 <?php
 
-$worker = new Net\Gearman\Worker('localhost:4730');
-$worker->addAbility('someBackgroundJob');
-$worker->beginWork();
+$function = function($payload) {
+    $arg = str_replace('java', 'php', $arg);
+
+    return [$arg];
+};
+
+$worker = new \Net\Gearman\Worker();
+$worker->addServer();
+$worker->addFunction('replace', $function);
+
+$worker->work();
 ```
