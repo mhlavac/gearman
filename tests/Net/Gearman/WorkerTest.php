@@ -60,11 +60,11 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddServers()
     {
-        $servers = [
+        $servers = array(
             'localhost',
             'localhost:1234',
             'example.com:4730'
-        ];
+        );
 
         $this->worker->addServers($servers);
 
@@ -78,9 +78,9 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddServersThrowsExceptionIfServerAlreadyExists()
     {
-        $servers = [
+        $servers = array(
             'localhost:4730'
-        ];
+        );
 
         $this->worker
             ->addServer('localhost')
@@ -97,11 +97,11 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
 
         $this->worker->addFunction($gearmanFunctionName, $callback);
 
-        $expectedFunctions = [
-            $gearmanFunctionName => [
+        $expectedFunctions = array(
+            $gearmanFunctionName => array(
                 'callback' => $callback
-            ]
-        ];
+            )
+        );
 
         $this->assertEquals($expectedFunctions, $this->worker->getFunctions());
     }
@@ -132,12 +132,12 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $this->worker->getFunctions());
 
         $this->worker->unregister($gearmanFunctionName);
-        $expectedFunctions = [
-            $gearmanFunctionNameSecond => [
+        $expectedFunctions = array(
+            $gearmanFunctionNameSecond => array(
                 'callback' => $callback,
                 'timeout' => $timeout
-            ]
-        ];
+            )
+        );
 
         $this->assertCount(1, $this->worker->getFunctions());
         $this->assertEquals($expectedFunctions, $this->worker->getFunctions());
@@ -169,9 +169,7 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     /*public function testWorker()
     {
         $function = function($payload) {
-            $arg = str_replace('java', 'php', $arg);
-
-            return [$arg];
+            return str_replace('java', 'php', $payload);
         };
 
         $worker = new Worker();

@@ -4,10 +4,10 @@ namespace Net\Gearman;
 /**
  * Interface for Danga's Gearman job scheduling system
  *
- * PHP version 5.4.4+
+ * PHP version 5.3.0+
  *
  * LICENSE: This source file is subject to the New BSD license that is
- * available through the world-wide-web at the following URI:
+ * available through the world-wide-web at the follow ing URI:
  * http://www.opensource.org/licenses/bsd-license.php. If you did not receive
  * a copy of the New BSD License and are unable to obtain it through the web,
  * please send a note to license@php.net so we can mail you a copy immediately.
@@ -52,24 +52,29 @@ namespace Net\Gearman;
 class Worker
 {
     /**
+     * @var string $id Unique id for this worker
+     */
+    protected $id;
+
+    /**
      * @var array $connection Pool of connections to Gearman servers
      */
-    protected $connection = [];
+    protected $connection = array();
 
     /**
      * @var array $conn Pool of retry connections
      */
-    protected $retryConn = [];
+    protected $retryConn = array();
 
     /**
      * @var array[] $functions
      */
-    protected $functions = [];
+    protected $functions = array();
 
     /**
      * @var string[] List of servers
      */
-    protected $servers = [];
+    protected $servers = array();
 
     /**
      * Callbacks registered for this worker
@@ -79,18 +84,11 @@ class Worker
      * @see Net\Gearman\Worker::JOB_COMPLETE
      * @see Net\Gearman\Worker::JOB_FAIL
      */
-    protected $callback = [
-        self::JOB_START     => [],
-        self::JOB_COMPLETE  => [],
-        self::JOB_FAIL      => []
-    ];
-
-    /**
-     * Unique id for this worker
-     *
-     * @var string $id
-     */
-    protected $id = "";
+    protected $callback = array(
+        self::JOB_START     => array(),
+        self::JOB_COMPLETE  => array(),
+        self::JOB_FAIL      => array()
+    );
 
     /**
      * Callback types
@@ -105,12 +103,10 @@ class Worker
 
     /**
      * @param string $id Optional unique id for this worker
-     *
-     * @return void
      */
-    public function __construct($id = "")
+    public function __construct($id = null)
     {
-        if(empty($id)){
+        if(null === $id){
             $id = "pid_".getmypid()."_".uniqid();
         }
 
@@ -201,7 +197,7 @@ class Worker
             throw new \InvalidArgumentException("Function $functionName is already registered");
         }
 
-        $this->functions[$functionName] = ['callback' => $callback];
+        $this->functions[$functionName] = array('callback' => $callback);
         if (null !== $timeout) {
             $this->functions[$functionName]['timeout'] = $timeout;
         }
@@ -230,7 +226,7 @@ class Worker
      */
     public function unregisterAll()
     {
-        $this->functions = [];
+        $this->functions = array();
 
         return $this;
     }
@@ -319,7 +315,7 @@ class Worker
         foreach ($this->getServers() as $server) {
             try {
                 $connection = Connection::connect($server);
-                Connection::send($connection, "set_client_id", ["client_id" => $this->id]);
+                Connection::send($connection, "set_client_id", array("client_id" => $this->id));
                 $this->connection[$server] = $connection;
             } catch (\Exception $exception) {
                 $this->retryConn[$server] = time();
@@ -334,7 +330,7 @@ class Worker
     public function registerFunctionsToOpenedConnections()
     {
         foreach (array_keys($this->functions) as $gearmanFunction) {
-            $params = ['func' => $gearmanFunction];
+            $params = array('func' => $gearmanFunction);
             $call = isset($params['timeout']) ? 'can_do_timeout' : 'can_do';
 
             foreach ($this->connection as $connection) {
@@ -360,7 +356,7 @@ class Worker
     {
         Connection::send($socket, 'grab_job');
 
-        $resp = ['function' => 'noop'];
+        $resp = array('function' => 'noop');
         while (count($resp) && $resp['function'] == 'noop') {
             $resp = Connection::blockingRead($socket);
         }
@@ -375,7 +371,7 @@ class Worker
 
         $name   = $resp['data']['func'];
         $handle = $resp['data']['handle'];
-        $arg    = [];
+        $arg    = array();
 
         if (isset($resp['data']['arg']) &&
             Connection::stringLength($resp['data']['arg'])) {
@@ -386,20 +382,16 @@ class Worker
         }
 
         try {
-            $this->start($handle, $name, $arg);
+            $this->callStartCallbacks($handle, $name, $arg);
 
             $functionCallback = $this->functions[$name]['callback'];
             $result = call_user_func($functionCallback, $arg);
 
-            /*if (!is_array($result)) {
-                $result = ['result' => $result];
-            }*/
-
             $this->jobComplete($socket, $handle, $result);
-            $this->complete($handle, $name, $result);
+            $this->callCompleteCallbacks($handle, $name, $result);
         } catch (JobException $e) {
             $this->jobFail($socket, $handle);
-            $this->fail($handle, $name, $e);
+            $this->callFailCallbacks($handle, $name, $e);
         }
 
         // Force the job's destructor to run
@@ -414,7 +406,6 @@ class Worker
      * @param integer $numerator   The numerator (e.g. 1)
      * @param integer $denominator The denominator  (e.g. 100)
      *
-     * @return void
      * @see Net\Gearman\Connection::send()
      */
     public function jobStatus($numerator, $denominator)
@@ -429,22 +420,18 @@ class Worker
     /**
      * Mark your job as complete with its status
      *
-     * Net_Gearman communicates between the client and jobs in JSON. The main
-     * benefit of this is that we can send fairly complex data types between
-     * different languages. You should always pass an array as the result to
-     * this function.
-     *
+     * @param resource $socket
+     * @param string $handle
      * @param array $result Result of your job
      *
-     * @return void
      * @see Net\Gearman\Connection::send()
      */
     private function jobComplete($socket, $handle, $result)
     {
-        Connection::send($socket, 'work_complete', [
+        Connection::send($socket, 'work_complete', array(
             'handle' => $handle,
             'result' => $result
-        ]);
+        ));
     }
 
     /**
@@ -454,14 +441,16 @@ class Worker
      * this function and exit from your run() method. This will tell Gearman
      * (and the client by proxy) that the job has failed.
      *
-     * @return void
+     * @param resource $socket
+     * @param string $handle
+     *
      * @see Net\Gearman\Connection::send()
      */
     private function jobFail($socket, $handle)
     {
-        Connection::send($socket, 'work_fail', [
+        Connection::send($socket, 'work_fail', array(
             'handle' => $handle
-        ]);
+        ));
     }
 
     /**
@@ -470,7 +459,6 @@ class Worker
      *
      * @throws Net\Gearman\Exception When an invalid callback is specified.
      * @throws Net\Gearman\Exception When an invalid type is specified.
-     * @return void
      */
     public function attachCallback($callback, $type = self::JOB_COMPLETE)
     {
@@ -484,15 +472,11 @@ class Worker
     }
 
     /**
-     * Run the job start callbacks
-     *
      * @param string $handle The job's Gearman handle
      * @param string $job    The name of the job
      * @param mixed  $args   The job's argument list
-     *
-     * @return void
      */
-    protected function start($handle, $job, $args)
+    protected function callStartCallbacks($handle, $job, $args)
     {
         foreach ($this->callback[self::JOB_START] as $callback) {
             call_user_func($callback, $handle, $job, $args);
@@ -500,15 +484,11 @@ class Worker
     }
 
     /**
-     * Run the complete callbacks
-     *
      * @param string $handle The job's Gearman handle
      * @param string $job    The name of the job
      * @param array  $result The job's returned result
-     *
-     * @return void
      */
-    protected function complete($handle, $job, array $result)
+    protected function callCompleteCallbacks($handle, $job, array $result)
     {
         foreach ($this->callback[self::JOB_COMPLETE] as $callback) {
             call_user_func($callback, $handle, $job, $result);
@@ -516,42 +496,27 @@ class Worker
     }
 
     /**
-     * Run the fail callbacks
-     *
      * @param string $handle The job's Gearman handle
      * @param string $job    The name of the job
      * @param object $error  The exception thrown
-     *
-     * @return void
      */
-    protected function fail($handle, $job, PEAR_Exception $error)
+    protected function callFailCallbacks($handle, $job, PEAR_Exception $error)
     {
         foreach ($this->callback[self::JOB_FAIL] as $callback) {
             call_user_func($callback, $handle, $job, $error);
         }
     }
 
-    /**
-     * Stop working
-     *
-     * @return void
-     */
+    public function __destruct()
+    {
+        $this->endWork();
+    }
+
     public function endWork()
     {
         foreach ($this->connection as $conn) {
             Connection::close($conn);
         }
-    }
-
-    /**
-     * Destructor
-     *
-     * @return void
-     * @see Net\Gearman\Worker::stop()
-     */
-    public function __destruct()
-    {
-        $this->endWork();
     }
 
     /**
