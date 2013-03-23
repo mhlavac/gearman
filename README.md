@@ -41,9 +41,7 @@ $client->someBackgroundJob([
 <?php
 
 $function = function($payload) {
-    $arg = str_replace('java', 'php', $arg);
-
-    return [$arg];
+    return str_replace('java', 'php', $arg);
 };
 
 $worker = new \Net\Gearman\Worker();

@@ -30,9 +30,7 @@ namespace Net\Gearman;
  *
  * <code>
  *     $function = function($payload) {
- *         $arg = str_replace('java', 'php', $payload);
- *
- *         return [$arg];
+ *         return str_replace('java', 'php', $payload);
  *     };
  *
  *     $worker = new Worker();
@@ -393,9 +391,9 @@ class Worker
             $functionCallback = $this->functions[$name]['callback'];
             $result = call_user_func($functionCallback, $arg);
 
-            if (!is_array($result)) {
+            /*if (!is_array($result)) {
                 $result = ['result' => $result];
-            }
+            }*/
 
             $this->jobComplete($socket, $handle, $result);
             $this->complete($handle, $name, $result);
@@ -445,7 +443,7 @@ class Worker
     {
         Connection::send($socket, 'work_complete', [
             'handle' => $handle,
-            'result' => json_encode($result)
+            'result' => $result
         ]);
     }
 
