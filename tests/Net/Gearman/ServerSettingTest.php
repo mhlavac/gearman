@@ -98,9 +98,9 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
 
     public function serverSettingImplementationDataProvider()
     {
-        return [
-            [new Worker()],
-            [new Client()]
-        ];
+        return array(
+            array(new Worker()),
+            array(new Client())
+        );
     }
 }
