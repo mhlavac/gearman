@@ -28,11 +28,17 @@ Examples
 ``` php
 <?php
 
-$client = new Net\Gearman\Client('localhost:4730');
-$client->someBackgroundJob([
-    'userid' => 5555,
-    'action' => 'new-comment'
-]);
+$client = new \Net\Gearman\Client();
+$client->addServer();
+
+$callback = function ($func, $handle, $result) {
+    echo $result;
+};
+$set = new Set();
+$task = new Task('replace', 'PHP is best programming language!', uniqid());
+$task->attachCallback($callback, Task::TASK_COMPLETE);
+$set->addTask($task);
+$client->runSet($set);
 ```
 
 ### Worker
@@ -41,7 +47,7 @@ $client->someBackgroundJob([
 <?php
 
 $function = function($payload) {
-    return str_replace('java', 'php', $arg);
+    return str_replace('java', 'php', $payload);
 };
 
 $worker = new \Net\Gearman\Worker();

@@ -28,18 +28,6 @@ namespace Net\Gearman;
  * Run an instance of a worker to listen for jobs. It then manages the running
  * of jobs, etc.
  *
- * <code>
- *     $function = function($payload) {
- *         return str_replace('java', 'php', $payload);
- *     };
- *
- *     $worker = new Worker();
- *     $worker->addServer();
- *     $worker->addFunction('replace', $function);
- *
- *     $worker->work();
- * </code>
- *
  * @category  Net
  * @package   Net_Gearman
  * @author    Joe Stump <joe@joestump.net>
@@ -49,7 +37,7 @@ namespace Net\Gearman;
  * @link      http://www.danga.com/gearman/
  * @see       Net\Gearman\Job, Net\Gearman\Connection
  */
-class Worker
+class Worker implements ServerSetting
 {
     /**
      * @var string $id Unique id for this worker
@@ -72,7 +60,7 @@ class Worker
     protected $functions = array();
 
     /**
-     * @var string[] List of servers
+     * @var string[] List of gearman servers
      */
     protected $servers = array();
 
@@ -113,20 +101,11 @@ class Worker
         $this->id = $id;
     }
 
-    /**
-     * @return string[]
-     */
     public function getServers()
     {
         return array_keys($this->servers);
     }
 
-    /**
-     * @param string $host
-     * @param int $port
-     * @throws \InvalidArgumentException
-     * @return self
-     */
     public function addServer($host = null , $port = null)
     {
         if (null === $host) {
@@ -147,11 +126,6 @@ class Worker
         return $this;
     }
 
-    /**
-     * @param string[] $servers
-     * @throws \InvalidArgumentException
-     * @return self
-     */
     public function addServers(array $servers)
     {
         foreach ($servers as $server) {
@@ -260,6 +234,7 @@ class Worker
                     $worked = $this->doWork($socket);
                 } catch (\Exception $e) {
                     unset($this->connection[$server]);
+                    file_put_contents('/home/hlavac/result.txt', $e->getMessage() . "\n", FILE_APPEND);
                     $this->retryConn[$server] = $currentTime;
                 }
                 if ($worked) {
@@ -486,9 +461,9 @@ class Worker
     /**
      * @param string $handle The job's Gearman handle
      * @param string $job    The name of the job
-     * @param array  $result The job's returned result
+     * @param string $result The job's returned result
      */
-    protected function callCompleteCallbacks($handle, $job, array $result)
+    protected function callCompleteCallbacks($handle, $job, $result)
     {
         foreach ($this->callback[self::JOB_COMPLETE] as $callback) {
             call_user_func($callback, $handle, $job, $result);

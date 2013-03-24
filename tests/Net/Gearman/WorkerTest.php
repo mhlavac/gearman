@@ -15,79 +15,6 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $this->worker = new Worker();
     }
 
-    public function testAddServer()
-    {
-        $this->worker->addServer('192.168.1.1');
-
-        $servers = $this->worker->getServers();
-
-        $this->assertCount(1, $servers);
-        $this->assertEquals('192.168.1.1:4730', $servers[0]);
-
-        $this->worker->addServer('192.168.1.1', 1234);
-
-        $servers = $this->worker->getServers();
-
-        $this->assertCount(2, $servers);
-        $this->assertEquals('192.168.1.1:1234', $servers[1]);
-
-        $this->worker->addServer('example.com');
-
-        $servers = $this->worker->getServers();
-
-        $this->assertCount(3, $servers);
-        $this->assertEquals('example.com:4730', $servers[2]);
-    }
-
-    public function testAddServerCallWithNoArgumentsAddsLocalhost()
-    {
-        $this->worker->addServer();
-
-        $servers = $this->worker->getServers();
-
-        $this->assertCount(1, $servers);
-        $this->assertEquals('localhost:4730', $servers[0]);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testAddServerThrowsExceptionIfServerAlreadyExists()
-    {
-        $this->worker->addServer();
-        $this->worker->addServer();
-    }
-
-    public function testAddServers()
-    {
-        $servers = array(
-            'localhost',
-            'localhost:1234',
-            'example.com:4730'
-        );
-
-        $this->worker->addServers($servers);
-
-        $servers[0] = 'localhost:4730';
-
-        $this->assertEquals($servers, $this->worker->getServers());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testAddServersThrowsExceptionIfServerAlreadyExists()
-    {
-        $servers = array(
-            'localhost:4730'
-        );
-
-        $this->worker
-            ->addServer('localhost')
-            ->addServers($servers)
-        ;
-    }
-
     public function testAddFunction()
     {
         $gearmanFunctionName = 'reverse';
@@ -169,6 +96,9 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     /*public function testWorker()
     {
         $function = function($payload) {
+            $result = str_replace('java', 'php', $payload);
+            file_put_contents('/home/hlavac/result.txt', $result . "\n", FILE_APPEND);
+
             return str_replace('java', 'php', $payload);
         };
 
