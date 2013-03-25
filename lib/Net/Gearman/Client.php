@@ -88,7 +88,7 @@ class Client implements ServerSetting
 
     public function addServer($host = null , $port = null)
     {
-            if (null === $host) {
+        if (null === $host) {
             $host = 'localhost';
         } else {
             $host = trim($host);
