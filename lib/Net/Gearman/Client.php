@@ -72,38 +72,43 @@ class Client implements ServerSetting
         return array_keys($this->servers);
     }
 
+    public function addServers(array $servers)
+    {
+        foreach ($servers as $server) {
+            $explodedServer = explode(':', $server);
+            $port = isset($explodedServer[1]) ? $explodedServer[1] : null;
+
+            $this->addServer($explodedServer[0], $port);
+        }
+
+        return $this;
+    }
+
     public function addServer($host = null , $port = null)
     {
         if (null === $host) {
             $host = 'localhost';
+        } else {
+            $host = trim($host);
         }
+
+        if (empty($host)) {
+            throw new \InvalidArgumentException("Invalid host '$host' given");
+        }
+
         if (null === $port) {
             $port = $this->getDefaultPort();
+        } elseif (empty($port)) {
+            throw new \InvalidArgumentException("Invalid port '$port' given");
         }
 
         $server = $host . ':' . $port;
 
         if (isset($this->servers[$server])) {
-            throw new \InvalidArgumentException("Server '$server' is already register");
+            throw new \InvalidArgumentException("Server '$server' is already registered");
         }
 
         $this->servers[$server] = true;
-
-        return $this;
-    }
-
-    public function addServers(array $servers)
-    {
-        foreach ($servers as $server) {
-            if (false === strpos($server, ':')) {
-                $server .= ':' . $this->getDefaultPort();
-            }
-            if (isset($this->servers[$server])) {
-                throw new \InvalidArgumentException("Server '$server' is already register");
-            }
-
-            $this->servers[$server] = true;
-        }
 
         return $this;
     }
@@ -311,10 +316,6 @@ class Client implements ServerSetting
     public function runSet(Set $set, $timeout = null)
     {
         foreach ($this->getServers() as $server) {
-            $server = trim($server);
-            if(empty($server)){
-                throw new Exception('Invalid servers specified');
-            }
             $conn = Connection::connect($server, $timeout);
             if (!Connection::isConnected($conn)) {
                 unset($this->servers[$server]);

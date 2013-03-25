@@ -39,6 +39,18 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
      * @param ServerSetting $serverSetting
      * @dataProvider serverSettingImplementationDataProvider
      */
+    public function testAddServerHostIsAutomaticallyTrimmed(ServerSetting $serverSetting)
+    {
+        $serverSetting->addServer('  localhost   ');
+        $servers = $serverSetting->getServers();
+
+        $this->assertEquals('localhost:4730', $servers[0]);
+    }
+
+    /**
+     * @param ServerSetting $serverSetting
+     * @dataProvider serverSettingImplementationDataProvider
+     */
     public function testAddServerCallWithNoArgumentsAddsLocalhost(ServerSetting $serverSetting)
     {
         $serverSetting->addServer();
@@ -58,6 +70,36 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
     {
         $serverSetting->addServer();
         $serverSetting->addServer();
+    }
+
+    /**
+     * @param ServerSetting $serverSetting
+     * @dataProvider serverSettingImplementationDataProvider
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddServerThrowsExceptionIfEmptyHostIsGiven(ServerSetting $serverSetting)
+    {
+        $serverSetting->addServer('');
+    }
+
+    /**
+     * @param ServerSetting $serverSetting
+     * @dataProvider serverSettingImplementationDataProvider
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddServerThrowsExceptionIfSpacesAreGivenAsHost(ServerSetting $serverSetting)
+    {
+        $serverSetting->addServer('      ');
+    }
+
+    /**
+     * @param ServerSetting $serverSetting
+     * @dataProvider serverSettingImplementationDataProvider
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddServerThrowsExceptionIfEmptyPortIsGiven(ServerSetting $serverSetting)
+    {
+        $serverSetting->addServer('localhost', 0);
     }
 
     /**

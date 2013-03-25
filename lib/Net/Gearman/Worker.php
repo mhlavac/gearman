@@ -7,7 +7,7 @@ namespace Net\Gearman;
  * PHP version 5.3.0+
  *
  * LICENSE: This source file is subject to the New BSD license that is
- * available through the world-wide-web at the follow ing URI:
+ * available through the world-wide-web at the following URI:
  * http://www.opensource.org/licenses/bsd-license.php. If you did not receive
  * a copy of the New BSD License and are unable to obtain it through the web,
  * please send a note to license@php.net so we can mail you a copy immediately.
@@ -106,38 +106,43 @@ class Worker implements ServerSetting
         return array_keys($this->servers);
     }
 
+    public function addServers(array $servers)
+    {
+        foreach ($servers as $server) {
+            $explodedServer = explode(':', $server);
+            $port = isset($explodedServer[1]) ? $explodedServer[1] : null;
+
+            $this->addServer($explodedServer[0], $port);
+        }
+
+        return $this;
+    }
+
     public function addServer($host = null , $port = null)
     {
         if (null === $host) {
             $host = 'localhost';
+        } else {
+            $host = trim($host);
         }
+
+        if (empty($host)) {
+            throw new \InvalidArgumentException("Invalid host '$host' given");
+        }
+
         if (null === $port) {
             $port = $this->getDefaultPort();
+        } elseif (empty($port)) {
+            throw new \InvalidArgumentException("Invalid port '$port' given");
         }
 
         $server = $host . ':' . $port;
 
         if (isset($this->servers[$server])) {
-            throw new \InvalidArgumentException("Server '$server' is already register");
+            throw new \InvalidArgumentException("Server '$server' is already registered");
         }
 
         $this->servers[$server] = true;
-
-        return $this;
-    }
-
-    public function addServers(array $servers)
-    {
-        foreach ($servers as $server) {
-            if (false === strpos($server, ':')) {
-                $server .= ':' . $this->getDefaultPort();
-            }
-            if (isset($this->servers[$server])) {
-                throw new \InvalidArgumentException("Server '$server' is already register");
-            }
-
-            $this->servers[$server] = true;
-        }
 
         return $this;
     }
@@ -341,7 +346,7 @@ class Worker implements ServerSetting
         }
 
         if ($resp['function'] != 'job_assign') {
-            throw new Exception('Holy Cow! What are you doing?!');
+            throw new Exception('Internal error - Job was not assigned after it was grabbed by this worker');
         }
 
         $name   = $resp['data']['func'];
