@@ -171,12 +171,10 @@ class Client implements ServerSetting
     }
 
     /**
-     * @param string $functionName
-     * @param string $workload
-     * @param string $unique
+     * @param Set $set
      * @return string
      */
-    protected function runSingleTaskSet($set)
+    protected function runSingleTaskSet(Set $set)
     {
         $this->runSet($set);
         $task = current($set->tasks);
@@ -244,7 +242,7 @@ class Client implements ServerSetting
     private function createSet($functionName, $workload, $unique = null, $type = Task::JOB_NORMAL)
     {
         if (null === $unique) {
-            $unique = getmypid()."_".uniqid();
+            $unique = $this->generateUniqueId();
         }
 
         $task = new Task($functionName, $workload, $unique);
@@ -253,6 +251,14 @@ class Client implements ServerSetting
         $set->addTask($task);
 
         return $set;
+    }
+
+    /**
+     * @return string
+     */
+    protected function generateUniqueId()
+    {
+        return getmypid() . '_' . uniqid();
     }
 
     /**
