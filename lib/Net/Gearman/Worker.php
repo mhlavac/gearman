@@ -101,7 +101,7 @@ class Worker implements ServerSetting
         $this->id = $id;
     }
 
-public function getServers()
+    public function getServers()
     {
         return array_keys($this->servers);
     }
@@ -122,11 +122,14 @@ public function getServers()
     {
         if (null === $host) {
             $host = 'localhost';
-        } elseif (empty($host)) {
-            throw new \InvalidArgumentException("Invalid host '$host' given");
         } else {
             $host = trim($host);
         }
+
+        if (empty($host)) {
+            throw new \InvalidArgumentException("Invalid host '$host' given");
+        }
+
         if (null === $port) {
             $port = $this->getDefaultPort();
         } elseif (empty($port)) {

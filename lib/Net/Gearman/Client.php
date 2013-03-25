@@ -88,13 +88,16 @@ class Client implements ServerSetting
 
     public function addServer($host = null , $port = null)
     {
-        if (null === $host) {
+            if (null === $host) {
             $host = 'localhost';
-        } elseif (empty($host)) {
-            throw new \InvalidArgumentException("Invalid host '$host' given");
         } else {
             $host = trim($host);
         }
+
+        if (empty($host)) {
+            throw new \InvalidArgumentException("Invalid host '$host' given");
+        }
+
         if (null === $port) {
             $port = $this->getDefaultPort();
         } elseif (empty($port)) {
