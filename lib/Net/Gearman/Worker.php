@@ -368,6 +368,9 @@ class Worker implements ServerSetting
 
             $functionCallback = $this->functions[$name]['callback'];
             $result = call_user_func($functionCallback, $arg);
+            if (!$result) {
+                $result = '';
+            }
 
             $this->jobComplete($socket, $handle, $result);
             $this->callCompleteCallbacks($handle, $name, $result);
