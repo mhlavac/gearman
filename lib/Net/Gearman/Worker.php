@@ -241,7 +241,6 @@ class Worker implements ServerSetting
                     $worked = $this->doWork($socket);
                 } catch (\Exception $e) {
                     unset($this->connection[$server]);
-                    file_put_contents('/home/hlavac/result.txt', $e->getMessage() . "\n", FILE_APPEND);
                     $this->retryConn[$server] = $currentTime;
                 }
                 if ($worked) {
