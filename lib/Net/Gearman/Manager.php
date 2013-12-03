@@ -142,11 +142,12 @@ class Manager
             if (!Connection::stringLength($t)) {
                 continue;
             }
-
-            list($info, $abilities) = explode(" : ", $t);
-            list($fd, $ip, $id)     = explode(' ', $info);
-
-            $abilities = trim($abilities);
+	    
+	    
+            $info = explode(" : ", $t);
+            list($fd, $ip, $id)     = explode(' ', $info[0]);
+	
+            $abilities = isset($info[1]) ? trim($info[1]) : '';
 
             $workers[] = array(
                 'fd' => $fd,
