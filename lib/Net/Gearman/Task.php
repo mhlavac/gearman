@@ -234,12 +234,12 @@ class Task
      * @param mixed   $arg  List of arguments for job
      * @param string  $uniq The unique id of the job
      * @param integer $type Type of job to run task as
+     * @param integer $epoch Time of job to run at (unix timestamp)
      *
      * @return \Net\Gearman\Task
      * @throws \Net\Gearman\Exception
      */
-    public function __construct($func, $arg, $uniq = null,
-                                $type = self::JOB_NORMAL, $epoch = 0)
+    public function __construct($func, $arg, $uniq = null, $type = self::JOB_NORMAL, $epoch = 0)
     {
         $this->func = $func;
         $this->arg  = $arg;

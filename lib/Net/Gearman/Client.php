@@ -41,7 +41,7 @@ class Client implements ServerSetting
     /**
      * Our randomly selected connection
      *
-     * @var resource $conn An open socket to Gearman
+     * @var resource[] $conn An array of open socket to Gearman
      */
     protected $conn = array();
 
@@ -56,10 +56,9 @@ class Client implements ServerSetting
     protected $timeout = 1000;
 
     /**
-     * @param array   $servers An array of servers or a single server
      * @param integer $timeout Timeout in microseconds
      *
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      * @see Net\Gearman\Connection
      */
     public function __construct($timeout = 1000)
@@ -257,6 +256,8 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     * @param integer $type Type of job to run task as
+     * @param integer $epoch Time of job to run at (unix timestamp)
      * @return Set
      */
     private function createSet($functionName, $workload, $unique = null, $type = Task::JOB_NORMAL, $epoch = 0)
@@ -284,10 +285,10 @@ class Client implements ServerSetting
     /**
      * Submit a task to Gearman
      *
-     * @param object $task Task to submit to Gearman
+     * @param Task $task Task to submit to Gearman
      *
      * @return      void
-     * @see         Net\Gearman\Task, Net\Gearman\Client::runSet()
+     * @see         \Net\Gearman\Task, \Net\Gearman\Client::runSet()
      */
     protected function submitTask(Task $task)
     {
@@ -340,8 +341,8 @@ class Client implements ServerSetting
     /**
      * Run a set of tasks
      *
-     * @param object $set A set of tasks to run
-     * @param int    $timeout Time in seconds for the socket timeout. Max is 10 seconds
+     * @param Set $set A set of tasks to run
+     * @param int $timeout Time in seconds for the socket timeout. Max is 10 seconds
      *
      * @return void
      * @see Net\Gearman\Set, Net\Gearman\Task
@@ -413,10 +414,10 @@ class Client implements ServerSetting
      *
      * @param array    $resp  The raw array response
      * @param resource $s     The socket
-     * @param object   $tasks The tasks being ran
+     * @param Set      $tasks The tasks being ran
      *
      * @return void
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      */
     protected function handleResponse($resp, $s, Set $tasks)
     {

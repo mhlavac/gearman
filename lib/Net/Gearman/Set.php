@@ -100,7 +100,6 @@ class Set implements \IteratorAggregate, \Countable
      *
      * @param array $tasks Array of tasks to run
      *
-     * @return void
      * @see \Net\Gearman\Task
      */
     public function __construct(array $tasks = array())
@@ -113,9 +112,8 @@ class Set implements \IteratorAggregate, \Countable
     /**
      * Add a task to the set
      *
-     * @param object $task Task to add to the set
+     * @param Task $task Task to add to the set
      *
-     * @return void
      * @see \Net\Gearman\Task, \Net\Gearman\Set::$tasks
      */
     public function addTask(Task $task)
@@ -160,6 +158,7 @@ class Set implements \IteratorAggregate, \Countable
     {
         if ($this->tasksCount == 0) {
             if (isset($this->callback)) {
+                $results = array();
                 foreach ($this->tasks as $task) {
                     $results[] = $task->result;
                 }
@@ -193,11 +192,11 @@ class Set implements \IteratorAggregate, \Countable
     /**
      * Get the iterator
      *
-     * @return ArrayIterator Tasks
+     * @return \ArrayIterator Tasks
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->tasks);
+        return new \ArrayIterator($this->tasks);
     }
 
     /**

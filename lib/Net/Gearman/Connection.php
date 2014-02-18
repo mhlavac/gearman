@@ -110,8 +110,6 @@ class Connection
 
     /**
      * Constructor
-     *
-     * @return void
      */
     final private function __construct()
     {
@@ -128,7 +126,7 @@ class Connection
      * @param int    $timeout Timeout in milliseconds
      *
      * @return resource A connection to a Gearman server
-     * @throws Net\Gearman\Exception when it can't connect to server
+     * @throws \Net\Gearman\Exception when it can't connect to server
      * @see Net\Gearman\Connection::$waiting
      * @see Net\Gearman\Connection::$magic
      * @see Net\Gearman\Connection::$commands
@@ -186,7 +184,7 @@ class Connection
      *
      * @see Net\Gearman\Connection::$commands, Net\Gearman\Connection::$socket
      * @return boolean
-     * @throws Net\Gearman\Exception on invalid command or unable to write
+     * @throws \Net\Gearman\Exception on invalid command or unable to write
      */
     static public function send($socket, $command, array $params = array())
     {
@@ -250,7 +248,7 @@ class Connection
      *
      * @see Net\Gearman\Connection::$magic
      * @return array Result read back from Gearman
-     * @throws Net\Gearman\Exception connection issues or invalid responses
+     * @throws \Net\Gearman\Exception connection issues or invalid responses
      */
     static public function read($socket)
     {
@@ -315,10 +313,10 @@ class Connection
      * @param resource $socket  The socket to read from
      * @param float    $timeout The timeout for the read
      *
-     * @throws Net\Gearman\Exception on timeouts
+     * @throws \Net\Gearman\Exception on timeouts
      * @return array
      */
-    static public function blockingRead($socket, $timeout = 500)
+    static public function blockingRead($socket, $timeout = 500.0)
     {
         static $cmds = array();
 

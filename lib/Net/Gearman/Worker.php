@@ -1,6 +1,8 @@
 <?php
 namespace Net\Gearman;
 
+use Net\Gearman\Job\JobException;
+
 /**
  * Interface for Danga's Gearman job scheduling system
  *
@@ -213,8 +215,7 @@ class Worker implements ServerSetting
     }
 
     /**
-     * @throws Exception
-     * @return bool
+     * @throws \Net\Gearman\Exception
      */
     public function work($monitor = null)
     {
@@ -288,7 +289,6 @@ class Worker implements ServerSetting
                 $working = false;
             }
         }
-
     }
 
     private function connectToAllServers()
@@ -330,7 +330,7 @@ class Worker implements ServerSetting
      * @param resource $socket The socket to work on
      *
      * @return boolean Returns true if work was done, false if not
-     * @throws Net_Gearman_Exception
+     * @throws \Net\Gearman\Exception
      * @see Net_Gearman_Connection::send()
      */
     protected function doWork($socket)
@@ -441,8 +441,7 @@ class Worker implements ServerSetting
      * @param callback $callback
      * @param int      $type
      *
-     * @throws Net\Gearman\Exception When an invalid callback is specified.
-     * @throws Net\Gearman\Exception When an invalid type is specified.
+     * @throws \Net\Gearman\Exception When an invalid callback or type is specified.
      */
     public function attachCallback($callback, $type = self::JOB_COMPLETE)
     {
@@ -480,11 +479,11 @@ class Worker implements ServerSetting
     }
 
     /**
-     * @param string $handle The job's Gearman handle
-     * @param string $job    The name of the job
-     * @param object $error  The exception thrown
+     * @param string $handle    The job's Gearman handle
+     * @param string $job       The name of the job
+     * @param \Exception $error The exception thrown
      */
-    protected function callFailCallbacks($handle, $job, PEAR_Exception $error)
+    protected function callFailCallbacks($handle, $job, \Exception $error)
     {
         foreach ($this->callback[self::JOB_FAIL] as $callback) {
             call_user_func($callback, $handle, $job, $error);

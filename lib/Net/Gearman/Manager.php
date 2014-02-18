@@ -65,8 +65,8 @@ class Manager
      * @param string  $server  Host and port (e.g. 'localhost:7003')
      * @param integer $timeout Connection timeout
      *
-     * @throws Net\Gearman\Exception
-     * @see Net\Gearman\Manager::$conn
+     * @throws \Net\Gearman\Exception
+     * @see \Net\Gearman\Manager::$conn
      */
     public function __construct($server, $timeout = 5)
     {
@@ -130,7 +130,7 @@ class Manager
      * that the worker has announced.
      *
      * @return array A list of workers connected to the server
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      */
     public function workers()
     {
@@ -174,7 +174,7 @@ class Manager
      * @param integer $size     New size of queue
      *
      * @return boolean
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      */
     public function setMaxQueueSize($function, $size)
     {
@@ -201,7 +201,7 @@ class Manager
      * that job.
      *
      * @return array An array keyed by function name
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      */
     public function status()
     {
@@ -233,7 +233,7 @@ class Manager
      * @param string $cmd The command to send
      *
      * @return void
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      */
     protected function sendCommand($cmd)
     {
@@ -254,7 +254,7 @@ class Manager
      * in everything until ".\n". If the command being sent is NOT ended with
      * ".\n" DO NOT use this command.
      *
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      * @return string
      */
     protected function recvCommand()
@@ -283,7 +283,7 @@ class Manager
      * @param string $data The returned data to check for an error
      *
      * @return void
-     * @throws Net\Gearman\Exception
+     * @throws \Net\Gearman\Exception
      */
     protected function checkForError($data)
     {
