@@ -113,6 +113,11 @@ class Connection
      */
     protected static $multiByteSupport = null;
 
+    public static $validResources = array(
+        'socket' => true,
+        'stream' => true
+    );
+
     /**
      * Constructor.
      */
@@ -375,7 +380,7 @@ class Connection
     {
         return (is_null($conn) !== true &&
                 is_resource($conn) === true &&
-                strtolower(get_resource_type($conn)) == 'socket');
+                !empty(self::$validResources[strtolower(get_resource_type($conn))]));
     }
 
     /**
