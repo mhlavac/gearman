@@ -1,7 +1,7 @@
 <?php
-namespace Net\Gearman\Tests;
+namespace MHlavac\Gearman\Tests;
 
-use Net\Gearman\Connection;
+use MHlavac\Gearman\Connection;
 /**
  * @category   Testing
  * @package    Net_Gearman
@@ -21,7 +21,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $connection = Connection::connect();
-        } catch (\Net\Gearman\Exception $exception) {
+        } catch (\MHlavac\Gearman\Exception $exception) {
             return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
         }
 
@@ -37,7 +37,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $connection = Connection::connect();
-        } catch (\Net\Gearman\Exception $exception) {
+        } catch (\MHlavac\Gearman\Exception $exception) {
             return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
         }
 

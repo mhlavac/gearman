@@ -1,5 +1,5 @@
 <?php
-namespace Net\Gearman;
+namespace MHlavac\Gearman;
 
 interface ServerSetting
 {
@@ -10,15 +10,19 @@ interface ServerSetting
 
     /**
      * @param string $host
-     * @param int $port
+     * @param int    $port
+     *
      * @throws \InvalidArgumentException
+     *
      * @return self
      */
-    public function addServer($host = 'localhost' , $port = null);
+    public function addServer($host = 'localhost', $port = null);
 
     /**
      * @param string|array $servers Servers separated with comma, or array of servers
+     *
      * @throws \InvalidArgumentException
+     *
      * @return self
      */
     public function addServers($servers);

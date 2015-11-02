@@ -1,10 +1,10 @@
 <?php
-namespace Net\Gearman\Job;
+namespace MHlavac\Gearman\Job;
 
-use Net\Gearman\Exception;
+use MHlavac\Gearman\Exception;
 
 /**
- * Interface for Danga's Gearman job scheduling system
+ * Interface for Danga's Gearman job scheduling system.
  *
  * PHP version 5.3.0+
  *
@@ -15,31 +15,34 @@ use Net\Gearman\Exception;
  * please send a note to license@php.net so we can mail you a copy immediately.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   CVS: $Id$
+ *
  * @link      http://pear.php.net/package/Net_Gearman
  * @link      http://www.danga.com/gearman/
  */
 
 /**
- * Exception class for Gearman jobs
+ * Exception class for Gearman jobs.
  *
  * Your Gearman jobs should throw this from their run() method if they run
  * into any kind of error.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   Release: @package_version@
+ *
  * @link      http://www.danga.com/gearman/
  * @see       Net_Gearman_Job_Common, Net_Gearman_Worker
  */
 class JobException extends Exception
 {
-
 }

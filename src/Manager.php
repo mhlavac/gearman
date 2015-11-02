@@ -1,8 +1,8 @@
 <?php
-namespace Net\Gearman;
+namespace MHlavac\Gearman;
 
 /**
- * Interface for Danga's Gearman job scheduling system
+ * Interface for Danga's Gearman job scheduling system.
  *
  * PHP version 5.3.0+
  *
@@ -13,60 +13,66 @@ namespace Net\Gearman;
  * please send a note to license@php.net so we can mail you a copy immediately.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   CVS: $Id$
+ *
  * @link      http://pear.php.net/package/Net_Gearman
  * @link      http://www.danga.com/gearman/
  */
 
 /**
- * A client for managing Gearmand servers
+ * A client for managing Gearmand servers.
  *
  * This class implements the administrative text protocol used by Gearman to do
  * a number of administrative tasks such as collecting stats on workers, the
  * queue, shutting down the server, version, etc.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   Release: @package_version@
+ *
  * @link      http://www.danga.com/gearman/
  */
 class Manager
 {
     /**
-     * Connection resource
+     * Connection resource.
      *
-     * @var resource $conn Connection to Gearman server
-     * @see Net\Gearman\Manager::sendCommand()
-     * @see Net\Gearman\Manager::recvCommand()
+     * @var resource Connection to Gearman server
+     *
+     * @see MHlavac\Gearman\Manager::sendCommand()
+     * @see MHlavac\Gearman\Manager::recvCommand()
      */
     protected $conn = null;
 
     /**
-     * The server is shutdown
+     * The server is shutdown.
      *
      * We obviously can't send more commands to a server after it's been shut
-     * down. This is set to true in Net\Gearman\Manager::shutdown() and then
-     * checked in Net\Gearman\Manager::sendCommand().
+     * down. This is set to true in MHlavac\Gearman\Manager::shutdown() and then
+     * checked in MHlavac\Gearman\Manager::sendCommand().
      *
-     * @var boolean $shutdown
+     * @var bool
      */
     protected $shutdown = false;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string  $server  Host and port (e.g. 'localhost:7003')
-     * @param integer $timeout Connection timeout
+     * @param string $server  Host and port (e.g. 'localhost:7003')
+     * @param int    $timeout Connection timeout
      *
-     * @throws \Net\Gearman\Exception
-     * @see \Net\Gearman\Manager::$conn
+     * @throws \MHlavac\Gearman\Exception
+     *
+     * @see \MHlavac\Gearman\Manager::$conn
      */
     public function __construct($server, $timeout = 5)
     {
@@ -77,8 +83,8 @@ class Manager
             $port = 4730;
         }
 
-        $errCode    = 0;
-        $errMsg     = '';
+        $errCode = 0;
+        $errMsg = '';
         $this->conn = @fsockopen($host, $port, $errCode, $errMsg, $timeout);
         if ($this->conn === false) {
             throw new Exception(
@@ -88,29 +94,32 @@ class Manager
     }
 
     /**
-     * Get the version of Gearman running
+     * Get the version of Gearman running.
      *
      * @return string
-     * @see Net\Gearman\Manager::sendCommand()
-     * @see Net\Gearman\Manager::checkForError()
+     *
+     * @see MHlavac\Gearman\Manager::sendCommand()
+     * @see MHlavac\Gearman\Manager::checkForError()
      */
     public function version()
     {
         $this->sendCommand('version');
         $res = fgets($this->conn, 4096);
         $this->checkForError($res);
+
         return trim($res);
     }
 
     /**
-     * Shut down Gearman
+     * Shut down Gearman.
      *
-     * @param boolean $graceful Whether it should be a graceful shutdown
+     * @param bool $graceful Whether it should be a graceful shutdown
      *
-     * @return boolean
-     * @see Net\Gearman\Manager::sendCommand()
-     * @see Net\Gearman\Manager::checkForError()
-     * @see Net\Gearman\Manager::$shutdown
+     * @return bool
+     *
+     * @see MHlavac\Gearman\Manager::sendCommand()
+     * @see MHlavac\Gearman\Manager::checkForError()
+     * @see MHlavac\Gearman\Manager::$shutdown
      */
     public function shutdown($graceful = false)
     {
@@ -120,48 +129,49 @@ class Manager
         $this->checkForError($res);
 
         $this->shutdown = (trim($res) == 'OK');
+
         return $this->shutdown;
     }
 
     /**
-     * Get worker status and info
+     * Get worker status and info.
      *
      * Returns the file descriptor, IP address, client ID and the abilities
      * that the worker has announced.
      *
+     * @throws \MHlavac\Gearman\Exception
+     *
      * @return array A list of workers connected to the server
-     * @throws \Net\Gearman\Exception
      */
     public function workers()
     {
         $this->sendCommand('workers');
-        $res     = $this->recvCommand();
-        $workers = array();
-        $tmp     = explode("\n", $res);
+        $res = $this->recvCommand();
+        $workers = [];
+        $tmp = explode("\n", $res);
         foreach ($tmp as $t) {
             if (!Connection::stringLength($t)) {
                 continue;
             }
-	    
-	    
-            $info = explode(" : ", $t);
-            list($fd, $ip, $id)     = explode(' ', $info[0]);
-	
+
+            $info = explode(' : ', $t);
+            list($fd, $ip, $id) = explode(' ', $info[0]);
+
             $abilities = isset($info[1]) ? trim($info[1]) : '';
 
-            $workers[] = array(
+            $workers[] = [
                 'fd' => $fd,
                 'ip' => $ip,
                 'id' => $id,
-                'abilities' => empty($abilities) ? array() : explode(' ', $abilities)
-            );
+                'abilities' => empty($abilities) ? [] : explode(' ', $abilities),
+            ];
         }
 
         return $workers;
     }
 
     /**
-     * Set maximum queue size for a function
+     * Set maximum queue size for a function.
      *
      * For a given function of job, the maximum queue size is adjusted to be
      * max_queue_size jobs long. A negative value indicates unlimited queue
@@ -170,11 +180,12 @@ class Manager
      * If the max_queue_size value is not supplied then it is unset (and the
      * default maximum queue size will apply to this function).
      *
-     * @param string  $function Name of function to set queue size for
-     * @param integer $size     New size of queue
+     * @param string $function Name of function to set queue size for
+     * @param int    $size     New size of queue
      *
-     * @return boolean
-     * @throws \Net\Gearman\Exception
+     * @throws \MHlavac\Gearman\Exception
+     *
+     * @return bool
      */
     public function setMaxQueueSize($function, $size)
     {
@@ -189,27 +200,29 @@ class Manager
         $this->sendCommand('maxqueue ' . $function . ' ' . $size);
         $res = fgets($this->conn, 4096);
         $this->checkForError($res);
+
         return (trim($res) == 'OK');
     }
 
     /**
-     * Get queue/worker status by function
+     * Get queue/worker status by function.
      *
      * This function queries for queue status. The array returned is keyed by
      * the function (job) name and has how many jobs are in the queue, how
      * many jobs are running and how many workers are capable of performing
      * that job.
      *
+     * @throws \MHlavac\Gearman\Exception
+     *
      * @return array An array keyed by function name
-     * @throws \Net\Gearman\Exception
      */
     public function status()
     {
         $this->sendCommand('status');
         $res = $this->recvCommand();
 
-        $status = array();
-        $tmp    = explode("\n", $res);
+        $status = [];
+        $tmp = explode("\n", $res);
         foreach ($tmp as $t) {
             if (!Connection::stringLength($t)) {
                 continue;
@@ -217,23 +230,22 @@ class Manager
 
             list($func, $inQueue, $jobsRunning, $capable) = explode("\t", $t);
 
-            $status[$func] = array(
+            $status[$func] = [
                 'in_queue' => $inQueue,
                 'jobs_running' => $jobsRunning,
-                'capable_workers' => $capable
-            );
+                'capable_workers' => $capable,
+            ];
         }
 
         return $status;
     }
 
     /**
-     * Send a command
+     * Send a command.
      *
      * @param string $cmd The command to send
      *
-     * @return void
-     * @throws \Net\Gearman\Exception
+     * @throws \MHlavac\Gearman\Exception
      */
     protected function sendCommand($cmd)
     {
@@ -247,14 +259,15 @@ class Manager
     }
 
     /**
-     * Receive a response
+     * Receive a response.
      *
      * For most commands Gearman returns a bunch of lines and ends the
      * transmission of data with a single line of ".\n". This command reads
      * in everything until ".\n". If the command being sent is NOT ended with
      * ".\n" DO NOT use this command.
      *
-     * @throws \Net\Gearman\Exception
+     * @throws \MHlavac\Gearman\Exception
+     *
      * @return string
      */
     protected function recvCommand()
@@ -274,7 +287,7 @@ class Manager
     }
 
     /**
-     * Check for an error
+     * Check for an error.
      *
      * Gearman returns errors in the format of 'ERR code_here Message+here'.
      * This method checks returned values from the server for this error format
@@ -282,8 +295,7 @@ class Manager
      *
      * @param string $data The returned data to check for an error
      *
-     * @return void
-     * @throws \Net\Gearman\Exception
+     * @throws \MHlavac\Gearman\Exception
      */
     protected function checkForError($data)
     {
@@ -295,10 +307,9 @@ class Manager
     }
 
     /**
-     * Disconnect from server
+     * Disconnect from server.
      *
-     * @return void
-     * @see Net\Gearman\Manager::$conn
+     * @see MHlavac\Gearman\Manager::$conn
      */
     public function disconnect()
     {
@@ -308,14 +319,10 @@ class Manager
     }
 
     /**
-     * Destructor
-     *
-     * @return void
+     * Destructor.
      */
     public function __destruct()
     {
         $this->disconnect();
     }
 }
-
-?>

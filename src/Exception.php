@@ -1,8 +1,8 @@
 <?php
-namespace Net\Gearman;
+namespace MHlavac\Gearman;
 
 /**
- * Interface for Danga's Gearman job scheduling system
+ * Interface for Danga's Gearman job scheduling system.
  *
  * PHP version 5.3.0+
  *
@@ -13,25 +13,30 @@ namespace Net\Gearman;
  * please send a note to license@php.net so we can mail you a copy immediately.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   CVS: $Id$
+ *
  * @link      http://pear.php.net/package/Net_Gearman
  * @link      http://www.danga.com/gearman/
  */
 
 /**
- * Exception class for Net_Gearman
+ * Exception class for Net_Gearman.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @link      http://www.danga.com/gearman/
+ *
  * @version   Release: @package_version@
+ *
  * @see       PEAR_Exception
  */
 class Exception extends \Exception

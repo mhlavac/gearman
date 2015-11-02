@@ -1,8 +1,8 @@
 <?php
-namespace Net\Gearman;
+namespace MHlavac\Gearman;
 
 /**
- * Interface for Danga's Gearman job scheduling system
+ * Interface for Danga's Gearman job scheduling system.
  *
  * PHP version 5.3.0+
  *
@@ -13,53 +13,58 @@ namespace Net\Gearman;
  * please send a note to license@php.net so we can mail you a copy immediately.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   CVS: $Id$
+ *
  * @link      http://pear.php.net/package/Net_Gearman
  * @link      http://www.danga.com/gearman/
  */
 
 /**
- * A client for submitting jobs to Gearman
+ * A client for submitting jobs to Gearman.
  *
  * This class is used by code submitting jobs to the Gearman server. It handles
  * taking tasks and sets of tasks and submitting them to the Gearman server.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   Release: @package_version@
+ *
  * @link      http://www.danga.com/gearman/
  */
 class Client implements ServerSetting
 {
     /**
-     * Our randomly selected connection
+     * Our randomly selected connection.
      *
-     * @var resource[] $conn An array of open socket to Gearman
+     * @var resource[] An array of open socket to Gearman
      */
-    protected $conn = array();
+    protected $conn = [];
 
     /**
      * @var string[] List of gearman servers
      */
-    protected $servers = array();
+    protected $servers = [];
 
     /**
-     * @var integer $timeout The timeout for Gearman connections
+     * @var int The timeout for Gearman connections
      */
     protected $timeout = 1000;
 
     /**
-     * @param integer $timeout Timeout in microseconds
+     * @param int $timeout Timeout in microseconds
      *
-     * @throws \Net\Gearman\Exception
-     * @see Net\Gearman\Connection
+     * @throws \MHlavac\Gearman\Exception
+     *
+     * @see MHlavac\Gearman\Connection
      */
     public function __construct($timeout = 1000)
     {
@@ -87,7 +92,7 @@ class Client implements ServerSetting
         return $this;
     }
 
-    public function addServer($host = 'localhost' , $port = null)
+    public function addServer($host = 'localhost', $port = null)
     {
         $host = trim($host);
         if (empty($host)) {
@@ -123,7 +128,7 @@ class Client implements ServerSetting
     }
 
     /**
-     * Get a connection to a Gearman server
+     * Get a connection to a Gearman server.
      *
      * @return resource A connection to a Gearman server
      */
@@ -138,6 +143,7 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     *
      * @return string
      */
     public function doNormal($functionName, $workload, $unique = null)
@@ -151,6 +157,7 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     *
      * @return string
      */
     public function doHigh($functionName, $workload, $unique = null)
@@ -164,6 +171,7 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     *
      * @return string
      */
     public function doLow($functionName, $workload, $unique = null)
@@ -173,6 +181,7 @@ class Client implements ServerSetting
 
     /**
      * @param Set $set
+     *
      * @return string
      */
     protected function runSingleTaskSet(Set $set)
@@ -190,6 +199,7 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     *
      * @return Task
      */
     public function doBackground($functionName, $workload, $unique = null)
@@ -207,6 +217,7 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     *
      * @return Task
      */
     public function doHighBackground($functionName, $workload, $unique = null)
@@ -224,6 +235,7 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
+     *
      * @return Task
      */
     public function doLowBackground($functionName, $workload, $unique = null)
@@ -240,8 +252,9 @@ class Client implements ServerSetting
      *
      * @param string $functionName
      * @param string $workload
-     * @param int $epoch
+     * @param int    $epoch
      * @param string $unique
+     *
      * @return Task
      */
     public function doEpoch($functionName, $workload, $epoch, $unique = null)
@@ -256,8 +269,9 @@ class Client implements ServerSetting
      * @param string $functionName
      * @param string $workload
      * @param string $unique
-     * @param integer $type Type of job to run task as
-     * @param integer $epoch Time of job to run at (unix timestamp)
+     * @param int    $type         Type of job to run task as
+     * @param int    $epoch        Time of job to run at (unix timestamp)
+     *
      * @return Set
      */
     private function createSet($functionName, $workload, $unique = null, $type = Task::JOB_NORMAL, $epoch = 0)
@@ -283,12 +297,11 @@ class Client implements ServerSetting
     }
 
     /**
-     * Submit a task to Gearman
+     * Submit a task to Gearman.
      *
      * @param Task $task Task to submit to Gearman
      *
-     * @return      void
-     * @see         \Net\Gearman\Task, \Net\Gearman\Client::runSet()
+     * @see         \MHlavac\Gearman\Task, \MHlavac\Gearman\Client::runSet()
      */
     protected function submitTask(Task $task)
     {
@@ -318,11 +331,11 @@ class Client implements ServerSetting
 
         $arg = $task->arg;
 
-        $params = array(
+        $params = [
             'func' => $task->func,
             'uniq' => $task->uniq,
-            'arg'  => $arg
-        );
+            'arg' => $arg,
+        ];
 
         if ($task->type == Task::JOB_EPOCH) {
             $params['epoch'] = $task->epoch;
@@ -331,21 +344,20 @@ class Client implements ServerSetting
         $s = $this->getConnection();
         Connection::send($s, $type, $params);
 
-        if (!is_array(Connection::$waiting[(int)$s])) {
-            Connection::$waiting[(int)$s] = array();
+        if (!is_array(Connection::$waiting[(int) $s])) {
+            Connection::$waiting[(int) $s] = [];
         }
 
-        array_push(Connection::$waiting[(int)$s], $task);
+        array_push(Connection::$waiting[(int) $s], $task);
     }
 
     /**
-     * Run a set of tasks
+     * Run a set of tasks.
      *
-     * @param Set $set A set of tasks to run
+     * @param Set $set     A set of tasks to run
      * @param int $timeout Time in seconds for the socket timeout. Max is 10 seconds
      *
-     * @return void
-     * @see Net\Gearman\Set, Net\Gearman\Task
+     * @see MHlavac\Gearman\Set, MHlavac\Gearman\Task
      */
     public function runSet(Set $set, $timeout = null)
     {
@@ -360,11 +372,11 @@ class Client implements ServerSetting
         }
 
         $totalTasks = $set->tasksCount;
-        $taskKeys   = array_keys($set->tasks);
-        $t          = 0;
+        $taskKeys = array_keys($set->tasks);
+        $t = 0;
 
-        if ($timeout !== null){
-            $socket_timeout = min(10, (int)$timeout);
+        if ($timeout !== null) {
+            $socket_timeout = min(10, (int) $timeout);
         } else {
             $socket_timeout = 10;
         }
@@ -388,17 +400,16 @@ class Client implements ServerSetting
                     $set->tasks[$k]->type == Task::JOB_HIGH_BACKGROUND ||
                     $set->tasks[$k]->type == Task::JOB_LOW_BACKGROUND ||
                     $set->tasks[$k]->type == Task::JOB_EPOCH) {
-
                     $set->tasks[$k]->finished = true;
-                    $set->tasksCount--;
+                    --$set->tasksCount;
                 }
 
-                $t++;
+                ++$t;
             }
 
-            $write  = null;
+            $write = null;
             $except = null;
-            $read   = $this->conn;
+            $read = $this->conn;
             socket_select($read, $write, $except, $socket_timeout);
             foreach ($read as $socket) {
                 $resp = Connection::read($socket);
@@ -410,14 +421,13 @@ class Client implements ServerSetting
     }
 
     /**
-     * Handle the response read in
+     * Handle the response read in.
      *
      * @param array    $resp  The raw array response
      * @param resource $s     The socket
      * @param Set      $tasks The tasks being ran
      *
-     * @return void
-     * @throws \Net\Gearman\Exception
+     * @throws \MHlavac\Gearman\Exception
      */
     protected function handleResponse($resp, $s, Set $tasks)
     {
@@ -432,8 +442,8 @@ class Client implements ServerSetting
             $task->complete($resp['data']['result']);
             break;
         case 'work_status':
-            $n = (int)$resp['data']['numerator'];
-            $d = (int)$resp['data']['denominator'];
+            $n = (int) $resp['data']['numerator'];
+            $d = (int) $resp['data']['denominator'];
             $task->status($n, $d);
             break;
         case 'work_fail':
@@ -441,7 +451,7 @@ class Client implements ServerSetting
             $task->fail();
             break;
         case 'job_created':
-            $task         = array_shift(Connection::$waiting[(int)$s]);
+            $task = array_shift(Connection::$waiting[(int) $s]);
             $task->handle = $resp['data']['handle'];
             if ($task->type == Task::JOB_BACKGROUND) {
                 $task->finished = true;
@@ -458,9 +468,7 @@ class Client implements ServerSetting
     }
 
     /**
-     * Disconnect from Gearman
-     *
-     * @return      void
+     * Disconnect from Gearman.
      */
     public function disconnect()
     {
@@ -474,9 +482,7 @@ class Client implements ServerSetting
     }
 
     /**
-     * Destructor
-     *
-     * @return      void
+     * Destructor.
      */
     public function __destruct()
     {

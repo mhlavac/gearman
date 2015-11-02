@@ -1,8 +1,8 @@
 <?php
-namespace Net\Gearman\Tests;
+namespace MHlavac\Gearman\Tests;
 
-use Net\Gearman\Client;
-use Net\Gearman\Connection;
+use MHlavac\Gearman\Client;
+use MHlavac\Gearman\Connection;
 
 class ClientnTest extends \PHPUnit_Framework_TestCase
 {

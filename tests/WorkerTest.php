@@ -1,7 +1,7 @@
 <?php
-namespace Net\Gearman\Tests;
+namespace MHlavac\Gearman\Tests;
 
-use Net\Gearman\Worker;
+use MHlavac\Gearman\Worker;
 
 class WorkerTest extends \PHPUnit_Framework_TestCase
 {

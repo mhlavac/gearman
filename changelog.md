@@ -1,3 +1,13 @@
+0.1.0
+-----
+
+* Moved this library to mhlavac/gearman namespace
+* Used PSR-4 to cleanup directories a lot
+* Added PHPUnit dev dependency
+* Added php_cs settings to set codestyle across project. Please refer to .php_cs see what the code style is
+
+Old Publero/net_gearman changes
+
 1.0.0
 -----
 

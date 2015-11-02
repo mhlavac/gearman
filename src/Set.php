@@ -1,8 +1,8 @@
 <?php
-namespace Net\Gearman;
+namespace MHlavac\Gearman;
 
 /**
- * Interface for Danga's Gearman job scheduling system
+ * Interface for Danga's Gearman job scheduling system.
  *
  * PHP version 5.3.0+
  *
@@ -13,17 +13,19 @@ namespace Net\Gearman;
  * please send a note to license@php.net so we can mail you a copy immediately.
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   CVS: $Id$
+ *
  * @link      http://pear.php.net/package/Net_Gearman
  * @link      http://www.danga.com/gearman/
  */
 
 /**
- * A class for creating sets of tasks
+ * A class for creating sets of tasks.
  *
  * <code>
  * <?php
@@ -40,14 +42,14 @@ namespace Net\Gearman;
  *     'Multiply' => array('3', '4')
  * );
  *
- * $set = new \Net\Gearman\Set();
+ * $set = new \MHlavac\Gearman\Set();
  * foreach ($jobs as $job => $args) {
- *     $task = new \Net\Gearman\Task($job, $args);
+ *     $task = new \MHlavac\Gearman\Task($job, $args);
  *     $task->attachCallback('echoResult');
  *     $set->addTask($task);
  * }
  *
- * $client = new \Net\Gearman\Client(array(
+ * $client = new \MHlavac\Gearman\Client(array(
  *     '127.0.0.1:7003', '127.0.0.1:7004'
  * ));
  *
@@ -57,52 +59,54 @@ namespace Net\Gearman;
  * </code>
  *
  * @category  Net
- * @package   Net_Gearman
+ *
  * @author    Joe Stump <joe@joestump.net>
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version   Release: @package_version@
+ *
  * @link      http://www.danga.com/gearman/
- * @see       \Net\Gearman\Job\CommonJob, \Net\Gearman\Worker
+ * @see       \MHlavac\Gearman\Job\CommonJob, \MHlavac\Gearman\Worker
  */
 class Set implements \IteratorAggregate, \Countable
 {
     /**
-     * Tasks count
+     * Tasks count.
      *
-     * @var integer $tasksCount
+     * @var int
      */
     public $tasksCount = 0;
 
     /**
-     * Tasks to run
+     * Tasks to run.
      *
-     * @var Task[] $tasks
+     * @var Task[]
      */
-    public $tasks = array();
+    public $tasks = [];
 
     /**
-     * Handle to task mapping
+     * Handle to task mapping.
      *
-     * @var array $handles
+     * @var array
      */
-    public $handles = array();
+    public $handles = [];
 
     /**
-     * Callback registered for set
+     * Callback registered for set.
      *
-     * @var mixed $callback
+     * @var mixed
      */
     protected $callback = null;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $tasks Array of tasks to run
      *
-     * @see \Net\Gearman\Task
+     * @see \MHlavac\Gearman\Task
      */
-    public function __construct(array $tasks = array())
+    public function __construct(array $tasks = [])
     {
         foreach ($tasks as $task) {
             $this->addTask($task);
@@ -110,27 +114,28 @@ class Set implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Add a task to the set
+     * Add a task to the set.
      *
      * @param Task $task Task to add to the set
      *
-     * @see \Net\Gearman\Task, \Net\Gearman\Set::$tasks
+     * @see \MHlavac\Gearman\Task, \MHlavac\Gearman\Set::$tasks
      */
     public function addTask(Task $task)
     {
         if (!isset($this->tasks[$task->uniq])) {
             $this->tasks[$task->uniq] = $task;
-            $this->tasksCount++;
+            ++$this->tasksCount;
         }
     }
 
     /**
-     * Get a task
+     * Get a task.
      *
      * @param string $handle Handle of task to get
      *
+     * @throws \MHlavac\Gearman\Exception
+     *
      * @return object Instance of task
-     * @throws \Net\Gearman\Exception
      */
     public function getTask($handle)
     {
@@ -152,13 +157,13 @@ class Set implements \IteratorAggregate, \Countable
      * finished running. If they have we also run the set callbacks if there
      * is one.
      *
-     * @return boolean
+     * @return bool
      */
     public function finished()
     {
         if ($this->tasksCount == 0) {
             if (isset($this->callback)) {
-                $results = array();
+                $results = [];
                 foreach ($this->tasks as $task) {
                     $results[] = $task->result;
                 }
@@ -173,12 +178,11 @@ class Set implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Attach a callback to this set
+     * Attach a callback to this set.
      *
      * @param callback $callback A valid PHP callback
      *
-     * @return void
-     * @throws \Net\Gearman\Exception
+     * @throws \MHlavac\Gearman\Exception
      */
     public function attachCallback($callback)
     {
@@ -190,7 +194,7 @@ class Set implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Get the iterator
+     * Get the iterator.
      *
      * @return \ArrayIterator Tasks
      */
@@ -200,9 +204,10 @@ class Set implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Get the task count
+     * Get the task count.
      *
      * @return int Number of tasks in the set
+     *
      * @see    {@link Countable::count()}
      */
     public function count()

@@ -1,1 +1,4 @@
 tests/tests-config.php
+.idea
+vendor
+composer.lock

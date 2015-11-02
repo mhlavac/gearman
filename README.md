@@ -1,7 +1,7 @@
 Net/Gearman
 ===========
 
-[![Build Status](https://secure.travis-ci.org/Publero/net_gearman.png?branch=master)](http://travis-ci.org/Publero/net_gearman)
+[![Build Status](https://secure.travis-ci.org/mhlavac/gearman.png?branch=master)](http://travis-ci.org/mhlavac/gearman)
 
 PHP library for interfacing with Danga's Gearman. Gearman is a system to farm out work to other machines,
 dispatching function calls to machines that are better suited to do work, to do work in parallel, to load
@@ -12,12 +12,12 @@ Installation
 
 Add following line to your composer.json require
 ``` json
-"publero/net_gearman": "1.0.x-dev"
+"mhlavac/gearman": "dev"
 ``` 
 
 You can use following command
 ``` sh
-composer.phar require --dev publero/net_geaman:1.0.x
+composer.phar require --dev mhlavac/geaman:dev
 ```
 
 Examples
@@ -28,7 +28,7 @@ Examples
 ``` php
 <?php
 
-$client = new \Net\Gearman\Client();
+$client = new \MHlavac\Gearman\Client();
 $client->addServer();
 
 $result = $client->doNormal('replace', 'PHP is best programming language!');
@@ -44,7 +44,7 @@ $function = function($payload) {
     return str_replace('java', 'php', $payload);
 };
 
-$worker = new \Net\Gearman\Worker();
+$worker = new \MHlavac\Gearman\Worker();
 $worker->addServer();
 $worker->addFunction('replace', $function);
 
@@ -67,7 +67,8 @@ About
 -----
 
 I've started working on this because you can't compile PECL gearman extension on windows where i need to use this code.
-Goal of this project is to make copy of the PECL gearman extension and allow PHP developers to use them in same way.
+Goal of this project is to make copy of the PECL gearman extension and allow PHP developers to use this implementation
+as a polyfill for it.
 
 Bugs and requests
 -----------------

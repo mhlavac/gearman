@@ -1,9 +1,9 @@
 <?php
-namespace Net\Gearman\Tests;
+namespace MHlavac\Gearman\Tests;
 
-use Net\Gearman\Worker;
-use Net\Gearman\ServerSetting;
-use Net\Gearman\Client;
+use MHlavac\Gearman\Worker;
+use MHlavac\Gearman\ServerSetting;
+use MHlavac\Gearman\Client;
 
 class ServerSettingTest extends \PHPUnit_Framework_TestCase
 {

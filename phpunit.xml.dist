@@ -13,7 +13,7 @@
 >
 
     <testsuites>
-        <testsuite name="PubleroNetGearman testsuite">
+        <testsuite name="Test suite">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>

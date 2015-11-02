@@ -1,7 +1,7 @@
 <?php
-namespace Net\Gearman\Tests;
+namespace MHlavac\Gearman\Tests;
 
-use Net\Gearman\Task;
+use MHlavac\Gearman\Task;
 /**
  * Net_Gearman_ConnectionTest
  *
@@ -22,7 +22,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
      * Unknown job type.
      *
      * @return void
-     * @expectedException Net\Gearman\Exception
+     * @expectedException MHlavac\Gearman\Exception
      */
     public function testExceptionFromConstruct()
     {
@@ -45,7 +45,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Net\Gearman\Exception
+     * @expectedException MHlavac\Gearman\Exception
      */
     public function testAttachInvalidCallback()
     {
@@ -54,7 +54,7 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Net\Gearman\Exception
+     * @expectedException MHlavac\Gearman\Exception
      */
     public function testAttachInvalidCallbackType()
     {
