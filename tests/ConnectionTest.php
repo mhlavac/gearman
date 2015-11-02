@@ -1,14 +1,16 @@
 <?php
-namespace MHlavac\Gearman\Tests;
+namespace MHlavac\Gearman\tests;
 
 use MHlavac\Gearman\Connection;
+
 /**
  * @category   Testing
- * @package    Net_Gearman
- * @subpackage Net_Gearman_Connection
+ *
  * @author     Till Klampaeckel <till@php.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version    CVS: $Id$
+ *
  * @link       http://pear.php.net/package/Net_Gearman
  * @since      0.2.4
  */

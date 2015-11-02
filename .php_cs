@@ -2,6 +2,7 @@
 
 $finder = Symfony\CS\Finder\DefaultFinder::create()
     ->in(__DIR__ . '/src')
+    ->in(__DIR__ . '/tests')
 ;
 
 return Symfony\CS\Config\Config::create()
@@ -74,7 +75,7 @@ return Symfony\CS\Config\Config::create()
          'php4_constructor',
          'php_unit_construct',
          'phpdoc_order',
-         'short_array_syntax',
+         'long_array_syntax',
          'short_echo_tag',
      ])
      ->finder($finder)

@@ -1,10 +1,9 @@
 <?php
-namespace MHlavac\Gearman\Tests;
+namespace MHlavac\Gearman\tests;
 
 use MHlavac\Gearman\Client;
-use MHlavac\Gearman\Connection;
 
-class ClientnTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Client

@@ -1,18 +1,20 @@
 <?php
-namespace MHlavac\Gearman\Tests;
+namespace MHlavac\Gearman\tests;
 
 use MHlavac\Gearman\Task;
+
 /**
- * Net_Gearman_ConnectionTest
+ * Net_Gearman_ConnectionTest.
  *
  * PHP version 5
  *
  * @category   Testing
- * @package    Net_Gearman
- * @subpackage Net_Gearman_Task
+ *
  * @author     Till Klampaeckel <till@php.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php New BSD License
+ *
  * @version    CVS: $Id$
+ *
  * @link       http://pear.php.net/package/Net_Gearman
  * @since      0.2.4
  */
@@ -21,7 +23,6 @@ class TaskTest extends \PHPUnit_Framework_TestCase
     /**
      * Unknown job type.
      *
-     * @return void
      * @expectedException MHlavac\Gearman\Exception
      */
     public function testExceptionFromConstruct()
@@ -31,8 +32,6 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test parameters.
-     *
-     * @return void
      */
     public function testParameters()
     {
@@ -86,8 +85,6 @@ class TaskTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Run the complete callback.
-     *
-     * @return void
      */
     public function testCompleteCallback()
     {
@@ -118,15 +115,13 @@ class TaskTest extends \PHPUnit_Framework_TestCase
      * @param string $func
      * @param string $handle
      * @param mixed  $result
-     *
-     * @return void
      */
     public function Net_Gearman_TaskTest_testCallBack($func, $handle, $result)
     {
         $GLOBALS['Net_Gearman_TaskTest'] = array(
-            'func'   => $func,
+            'func' => $func,
             'handle' => $handle,
-            'result' => $result
+            'result' => $result,
         );
     }
 }

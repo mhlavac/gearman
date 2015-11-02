@@ -147,7 +147,7 @@ class Manager
     {
         $this->sendCommand('workers');
         $res = $this->recvCommand();
-        $workers = [];
+        $workers = array();
         $tmp = explode("\n", $res);
         foreach ($tmp as $t) {
             if (!Connection::stringLength($t)) {
@@ -159,12 +159,12 @@ class Manager
 
             $abilities = isset($info[1]) ? trim($info[1]) : '';
 
-            $workers[] = [
+            $workers[] = array(
                 'fd' => $fd,
                 'ip' => $ip,
                 'id' => $id,
-                'abilities' => empty($abilities) ? [] : explode(' ', $abilities),
-            ];
+                'abilities' => empty($abilities) ? array() : explode(' ', $abilities),
+            );
         }
 
         return $workers;
@@ -221,7 +221,7 @@ class Manager
         $this->sendCommand('status');
         $res = $this->recvCommand();
 
-        $status = [];
+        $status = array();
         $tmp = explode("\n", $res);
         foreach ($tmp as $t) {
             if (!Connection::stringLength($t)) {
@@ -230,11 +230,11 @@ class Manager
 
             list($func, $inQueue, $jobsRunning, $capable) = explode("\t", $t);
 
-            $status[$func] = [
+            $status[$func] = array(
                 'in_queue' => $inQueue,
                 'jobs_running' => $jobsRunning,
                 'capable_workers' => $capable,
-            ];
+            );
         }
 
         return $status;

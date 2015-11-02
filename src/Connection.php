@@ -51,35 +51,35 @@ class Connection
      * @see MHlavac\Gearman\Connection::$magic
      * @see MHlavac\Gearman\Connection::connect()
      */
-    protected static $commands = [
-        'can_do' => [1, ['func']],
-        'can_do_timeout' => [23, ['func', 'timeout']],
-        'cant_do' => [2, ['func']],
-        'reset_abilities' => [3, []],
-        'set_client_id' => [22, ['client_id']],
-        'pre_sleep' => [4, []],
-        'noop' => [6, []],
-        'submit_job' => [7, ['func', 'uniq', 'arg']],
-        'submit_job_high' => [21, ['func', 'uniq', 'arg']],
-        'submit_job_bg' => [18, ['func', 'uniq', 'arg']],
-        'submit_job_epoch' => [36, ['func', 'uniq', 'epoch','arg']],
-        'submit_job_high_bg' => [32, ['func', 'uniq', 'arg']],
-        'submit_job_low' => [33, ['func', 'uniq', 'arg']],
-        'submit_job_low_bg' => [34, ['func', 'uniq', 'arg']],
-        'job_created' => [8, ['handle']],
-        'grab_job' => [9, []],
-        'no_job' => [10, []],
-        'job_assign' => [11, ['handle', 'func', 'arg']],
-        'work_status' => [12, ['handle', 'numerator', 'denominator']],
-        'work_complete' => [13, ['handle', 'result']],
-        'work_fail' => [14, ['handle']],
-        'get_status' => [15, ['handle']],
-        'status_res' => [20, ['handle', 'known', 'running', 'numerator', 'denominator']],
-        'echo_req' => [16, ['text']],
-        'echo_res' => [17, ['text']],
-        'error' => [19, ['err_code', 'err_text']],
-        'all_yours' => [24, []],
-    ];
+    protected static $commands = array(
+        'can_do' => array(1, array('func')),
+        'can_do_timeout' => array(23, array('func', 'timeout')),
+        'cant_do' => array(2, array('func')),
+        'reset_abilities' => array(3, array()),
+        'set_client_id' => array(22, array('client_id')),
+        'pre_sleep' => array(4, array()),
+        'noop' => array(6, array()),
+        'submit_job' => array(7, array('func', 'uniq', 'arg')),
+        'submit_job_high' => array(21, array('func', 'uniq', 'arg')),
+        'submit_job_bg' => array(18, array('func', 'uniq', 'arg')),
+        'submit_job_epoch' => array(36, array('func', 'uniq', 'epoch','arg')),
+        'submit_job_high_bg' => array(32, array('func', 'uniq', 'arg')),
+        'submit_job_low' => array(33, array('func', 'uniq', 'arg')),
+        'submit_job_low_bg' => array(34, array('func', 'uniq', 'arg')),
+        'job_created' => array(8, array('handle')),
+        'grab_job' => array(9, array()),
+        'no_job' => array(10, array()),
+        'job_assign' => array(11, array('handle', 'func', 'arg')),
+        'work_status' => array(12, array('handle', 'numerator', 'denominator')),
+        'work_complete' => array(13, array('handle', 'result')),
+        'work_fail' => array(14, array('handle')),
+        'get_status' => array(15, array('handle')),
+        'status_res' => array(20, array('handle', 'known', 'running', 'numerator', 'denominator')),
+        'echo_req' => array(16, array('text')),
+        'echo_res' => array(17, array('text')),
+        'error' => array(19, array('err_code', 'err_text')),
+        'all_yours' => array(24, array()),
+    );
 
     /**
      * The reverse of MHlavac\Gearman\Connection::$commands.
@@ -92,7 +92,7 @@ class Connection
      * @see MHlavac\Gearman\Connection::$commands
      * @see MHlavac\Gearman\Connection::connect()
      */
-    protected static $magic = [];
+    protected static $magic = array();
 
     /**
      * Tasks waiting for a handle.
@@ -104,7 +104,7 @@ class Connection
      * @var array
      * @static
      */
-    public static $waiting = [];
+    public static $waiting = array();
 
     /**
      * Is PHP's multibyte overload turned on?
@@ -142,7 +142,7 @@ class Connection
     {
         if (!count(self::$magic)) {
             foreach (self::$commands as $cmd => $i) {
-                self::$magic[$i[0]] = [$cmd, $i[1]];
+                self::$magic[$i[0]] = array($cmd, $i[1]);
             }
         }
 
@@ -173,7 +173,7 @@ class Connection
             );
         }
 
-        self::$waiting[(int) $socket] = [];
+        self::$waiting[(int) $socket] = array();
 
         return $socket;
     }
@@ -196,13 +196,13 @@ class Connection
      *
      * @return bool
      */
-    public static function send($socket, $command, array $params = [])
+    public static function send($socket, $command, array $params = array())
     {
         if (!isset(self::$commands[$command])) {
             throw new Exception('Invalid command: ' . $command);
         }
 
-        $data = [];
+        $data = array();
         foreach (self::$commands[$command][1] as $field) {
             if (isset($params[$field])) {
                 $data[] = $params[$field];
@@ -273,7 +273,7 @@ class Connection
         }
 
         if (self::stringLength($header) == 0) {
-            return [];
+            return array();
         }
         $resp = @unpack('a4magic/Ntype/Nlen', $header);
 
@@ -287,7 +287,7 @@ class Connection
             );
         }
 
-        $return = [];
+        $return = array();
         if ($resp['len'] > 0) {
             $data = '';
             while (self::stringLength($data) < $resp['len']) {
@@ -311,9 +311,9 @@ class Connection
             );
         }
 
-        return ['function' => self::$magic[$resp['type']][0],
+        return array('function' => self::$magic[$resp['type']][0],
                      'type' => $resp['type'],
-                     'data' => $return, ];
+                     'data' => $return, );
     }
 
     /**
@@ -328,7 +328,7 @@ class Connection
      */
     public static function blockingRead($socket, $timeout = 500.0)
     {
-        static $cmds = [];
+        static $cmds = array();
 
         $tv_sec = floor(($timeout % 1000));
         $tv_usec = ($timeout * 1000);
@@ -341,7 +341,7 @@ class Connection
 
             $write = null;
             $except = null;
-            $read = [$socket];
+            $read = array($socket);
 
             socket_select($read, $write, $except, $tv_sec, $tv_usec);
             foreach ($read as $s) {

@@ -1,5 +1,5 @@
 <?php
-namespace MHlavac\Gearman\Tests;
+namespace MHlavac\Gearman\tests;
 
 use MHlavac\Gearman\Worker;
 
@@ -26,8 +26,8 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
 
         $expectedFunctions = array(
             $gearmanFunctionName => array(
-                'callback' => $callback
-            )
+                'callback' => $callback,
+            ),
         );
 
         $this->assertEquals($expectedFunctions, $this->worker->getFunctions());
@@ -62,8 +62,8 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
         $expectedFunctions = array(
             $gearmanFunctionNameSecond => array(
                 'callback' => $callback,
-                'timeout' => $timeout
-            )
+                'timeout' => $timeout,
+            ),
         );
 
         $this->assertCount(1, $this->worker->getFunctions());
@@ -97,13 +97,13 @@ class WorkerTest extends \PHPUnit_Framework_TestCase
     {
         return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
 
-        $function = function($payload) {
+        $function = function ($payload) {
             $result = str_replace('java', 'php', $payload);
 
             return str_replace('java', 'php', $payload);
         };
 
-        $function2 = function($payload) {
+        $function2 = function ($payload) {
             while (false !== strpos($payload, 'java')) {
                 $payload = preg_replace('/java/', 'php', $payload, 1);
                 sleep(1);

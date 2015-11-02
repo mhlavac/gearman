@@ -52,7 +52,7 @@ class Task
      *
      * @var array
      */
-    public $arg = [];
+    public $arg = array();
 
     /**
      * Type of job.
@@ -136,11 +136,11 @@ class Task
      * @see \MHlavac\Gearman\Task::status()
      * @see \MHlavac\Gearman\Task::fail()
      */
-    protected $callback = [
-        self::TASK_COMPLETE => [],
-        self::TASK_FAIL => [],
-        self::TASK_STATUS => [],
-    ];
+    protected $callback = array(
+        self::TASK_COMPLETE => array(),
+        self::TASK_FAIL => array(),
+        self::TASK_STATUS => array(),
+    );
 
     /**
      * Normal job.
@@ -296,7 +296,7 @@ class Task
 
         if (!in_array(
             $type,
-            [self::TASK_COMPLETE, self::TASK_FAIL, self::TASK_STATUS]
+            array(self::TASK_COMPLETE, self::TASK_FAIL, self::TASK_STATUS)
         )) {
             throw new Exception('Invalid callback type specified');
         }

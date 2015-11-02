@@ -53,22 +53,22 @@ class Worker implements ServerSetting
     /**
      * @var array Pool of connections to Gearman servers
      */
-    protected $connection = [];
+    protected $connection = array();
 
     /**
      * @var array Pool of retry connections
      */
-    protected $retryConn = [];
+    protected $retryConn = array();
 
     /**
      * @var array[]
      */
-    protected $functions = [];
+    protected $functions = array();
 
     /**
      * @var string[] List of gearman servers
      */
-    protected $servers = [];
+    protected $servers = array();
 
     /**
      * Callbacks registered for this worker.
@@ -79,11 +79,11 @@ class Worker implements ServerSetting
      * @see MHlavac\Gearman\Worker::JOB_COMPLETE
      * @see MHlavac\Gearman\Worker::JOB_FAIL
      */
-    protected $callback = [
-        self::JOB_START => [],
-        self::JOB_COMPLETE => [],
-        self::JOB_FAIL => [],
-    ];
+    protected $callback = array(
+        self::JOB_START => array(),
+        self::JOB_COMPLETE => array(),
+        self::JOB_FAIL => array(),
+    );
 
     /**
      * Callback types.
@@ -187,7 +187,7 @@ class Worker implements ServerSetting
             throw new \InvalidArgumentException("Function $functionName is already registered");
         }
 
-        $this->functions[$functionName] = ['callback' => $callback];
+        $this->functions[$functionName] = array('callback' => $callback);
         if (null !== $timeout) {
             $this->functions[$functionName]['timeout'] = $timeout;
         }
@@ -218,7 +218,7 @@ class Worker implements ServerSetting
      */
     public function unregisterAll()
     {
-        $this->functions = [];
+        $this->functions = array();
 
         return $this;
     }
@@ -232,7 +232,7 @@ class Worker implements ServerSetting
         $this->registerFunctionsToOpenedConnections();
 
         if (!is_callable($monitor)) {
-            $monitor = [$this, 'stopWork'];
+            $monitor = array($this, 'stopWork');
         }
 
         $write = null;
@@ -278,7 +278,7 @@ class Worker implements ServerSetting
                         $this->connection[$s] = $conn;
                         $retryChange = true;
                         unset($this->retryConn[$s]);
-                        Connection::send($conn, 'set_client_id', ['client_id' => $this->id]);
+                        Connection::send($conn, 'set_client_id', array('client_id' => $this->id));
                     } catch (Exception $e) {
                         $this->retryConn[$s] = $currentTime;
                     }
@@ -305,7 +305,7 @@ class Worker implements ServerSetting
         foreach ($this->getServers() as $server) {
             try {
                 $connection = Connection::connect($server);
-                Connection::send($connection, 'set_client_id', ['client_id' => $this->id]);
+                Connection::send($connection, 'set_client_id', array('client_id' => $this->id));
                 $this->connection[$server] = $connection;
             } catch (\Exception $exception) {
                 $this->retryConn[$server] = time();
@@ -320,7 +320,7 @@ class Worker implements ServerSetting
     public function registerFunctionsToOpenedConnections()
     {
         foreach (array_keys($this->functions) as $gearmanFunction) {
-            $params = ['func' => $gearmanFunction];
+            $params = array('func' => $gearmanFunction);
             $call = isset($params['timeout']) ? 'can_do_timeout' : 'can_do';
 
             foreach ($this->connection as $connection) {
@@ -348,12 +348,12 @@ class Worker implements ServerSetting
     {
         Connection::send($socket, 'grab_job');
 
-        $resp = ['function' => 'noop'];
+        $resp = array('function' => 'noop');
         while (count($resp) && $resp['function'] == 'noop') {
             $resp = Connection::blockingRead($socket);
         }
 
-        if (in_array($resp['function'], ['noop', 'no_job'])) {
+        if (in_array($resp['function'], array('noop', 'no_job'))) {
             return false;
         }
 
@@ -363,7 +363,7 @@ class Worker implements ServerSetting
 
         $name = $resp['data']['func'];
         $handle = $resp['data']['handle'];
-        $arg = [];
+        $arg = array();
 
         if (isset($resp['data']['arg']) &&
             Connection::stringLength($resp['data']['arg'])) {
@@ -405,11 +405,11 @@ class Worker implements ServerSetting
      */
     public function jobStatus($numerator, $denominator)
     {
-        Connection::send($this->conn, 'work_status', [
+        Connection::send($this->conn, 'work_status', array(
             'handle' => $this->handle,
             'numerator' => $numerator,
             'denominator' => $denominator,
-        ]);
+        ));
     }
 
     /**
@@ -423,10 +423,10 @@ class Worker implements ServerSetting
      */
     private function jobComplete($socket, $handle, $result)
     {
-        Connection::send($socket, 'work_complete', [
+        Connection::send($socket, 'work_complete', array(
             'handle' => $handle,
             'result' => $result,
-        ]);
+        ));
     }
 
     /**
@@ -443,9 +443,9 @@ class Worker implements ServerSetting
      */
     private function jobFail($socket, $handle)
     {
-        Connection::send($socket, 'work_fail', [
+        Connection::send($socket, 'work_fail', array(
             'handle' => $handle,
-        ]);
+        ));
     }
 
     /**

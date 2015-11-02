@@ -83,14 +83,14 @@ class Set implements \IteratorAggregate, \Countable
      *
      * @var Task[]
      */
-    public $tasks = [];
+    public $tasks = array();
 
     /**
      * Handle to task mapping.
      *
      * @var array
      */
-    public $handles = [];
+    public $handles = array();
 
     /**
      * Callback registered for set.
@@ -106,7 +106,7 @@ class Set implements \IteratorAggregate, \Countable
      *
      * @see \MHlavac\Gearman\Task
      */
-    public function __construct(array $tasks = [])
+    public function __construct(array $tasks = array())
     {
         foreach ($tasks as $task) {
             $this->addTask($task);
@@ -163,7 +163,7 @@ class Set implements \IteratorAggregate, \Countable
     {
         if ($this->tasksCount == 0) {
             if (isset($this->callback)) {
-                $results = [];
+                $results = array();
                 foreach ($this->tasks as $task) {
                     $results[] = $task->result;
                 }

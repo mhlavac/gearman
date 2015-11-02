@@ -47,12 +47,12 @@ class Client implements ServerSetting
      *
      * @var resource[] An array of open socket to Gearman
      */
-    protected $conn = [];
+    protected $conn = array();
 
     /**
      * @var string[] List of gearman servers
      */
-    protected $servers = [];
+    protected $servers = array();
 
     /**
      * @var int The timeout for Gearman connections
@@ -331,11 +331,11 @@ class Client implements ServerSetting
 
         $arg = $task->arg;
 
-        $params = [
+        $params = array(
             'func' => $task->func,
             'uniq' => $task->uniq,
             'arg' => $arg,
-        ];
+        );
 
         if ($task->type == Task::JOB_EPOCH) {
             $params['epoch'] = $task->epoch;
@@ -345,7 +345,7 @@ class Client implements ServerSetting
         Connection::send($s, $type, $params);
 
         if (!is_array(Connection::$waiting[(int) $s])) {
-            Connection::$waiting[(int) $s] = [];
+            Connection::$waiting[(int) $s] = array();
         }
 
         array_push(Connection::$waiting[(int) $s], $task);

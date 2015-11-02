@@ -1,9 +1,9 @@
 <?php
-namespace MHlavac\Gearman\Tests;
+namespace MHlavac\Gearman\tests;
 
-use MHlavac\Gearman\Worker;
-use MHlavac\Gearman\ServerSetting;
 use MHlavac\Gearman\Client;
+use MHlavac\Gearman\ServerSetting;
+use MHlavac\Gearman\Worker;
 
 class ServerSettingTest extends \PHPUnit_Framework_TestCase
 {
@@ -111,7 +111,7 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
         $servers = array(
             'localhost',
             'localhost:1234',
-            'example.com:4730'
+            'example.com:4730',
         );
 
         $serverSetting->addServers($servers);
@@ -133,7 +133,7 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
         $servers = array(
             'localhost:4730',
             'localhost:1234',
-            'example.com:4730'
+            'example.com:4730',
         );
         $this->assertEquals($servers, $serverSetting->getServers());
     }
@@ -146,7 +146,7 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
     public function testAddServersThrowsExceptionIfServerAlreadyExists(ServerSetting $serverSetting)
     {
         $servers = array(
-            'localhost:4730'
+            'localhost:4730',
         );
 
         $serverSetting
@@ -159,7 +159,7 @@ class ServerSettingTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array(new Worker()),
-            array(new Client())
+            array(new Client()),
         );
     }
 }
