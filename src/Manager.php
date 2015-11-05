@@ -44,6 +44,12 @@ namespace MHlavac\Gearman;
 class Manager
 {
     /**
+     * Default  connection timeout.
+     * @type int
+     */
+    const CONNECT_TIMEOUT = 5;
+    
+    /**
      * Connection resource.
      *
      * @var resource Connection to Gearman server
@@ -63,6 +69,18 @@ class Manager
      * @var bool
      */
     protected $shutdown = false;
+    
+    /**
+     * Last error code
+     * @var int
+     */
+    private $errorCode = 0;
+
+    /**
+     * Last error message
+     * @var null|string
+     */
+    private $errorMessage = null;
 
     /**
      * Constructor.
@@ -74,7 +92,7 @@ class Manager
      *
      * @see \MHlavac\Gearman\Manager::$conn
      */
-    public function __construct($server, $timeout = 5)
+    public function __construct($server, $timeout = self::CONNECT_TIMEOUT)
     {
         if (strpos($server, ':')) {
             list($host, $port) = explode(':', $server);
@@ -83,12 +101,15 @@ class Manager
             $port = Connection::DEFAULT_PORT;
         }
 
-        $errCode = 0;
-        $errMsg = '';
-        $this->conn = @fsockopen($host, $port, $errCode, $errMsg, $timeout);
-        if ($this->conn === false) {
+        if (!$this->conn = @fsockopen($host, $port, $this->errorCode, $this->errorMessage, $timeout)) {
             throw new Exception(
-                'Could not connect to ' . $host . ':' . $port
+                sprintf(
+                    '[%s]: Could not connect to %s:%s. Server says: %s',
+                    $this->errorCode,
+                    $host,
+                    $port,
+                    $this->errorMessage
+                )
             );
         }
     }
@@ -302,7 +323,11 @@ class Manager
         $data = trim($data);
         if (preg_match('/^ERR/', $data)) {
             list(, $code, $msg) = explode(' ', $data);
-            throw new Exception($msg, urldecode($code));
+
+            $this->errorCode = urlencode($code);
+            $this->errorMessage = $message;
+            
+            throw new Exception($this->errorMessage, $this->errorCode);
         }
     }
 
