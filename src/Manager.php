@@ -50,12 +50,6 @@ class Manager
     const CONNECT_TIMEOUT = 5;
     
     /**
-     * Default  connection port.
-     * @type int
-     */
-    const DEFAULT_PORT = 4730;
-    
-    /**
      * Connection resource.
      *
      * @var resource Connection to Gearman server
@@ -104,7 +98,7 @@ class Manager
             list($host, $port) = explode(':', $server);
         } else {
             $host = $server;
-            $port = self::DEFAULT_PORT;
+            $port = Connection::DEFAULT_PORT;
         }
 
         if (!$this->conn = @fsockopen($host, $port, $this->errorCode, $this->errorMessage, $timeout)) {
