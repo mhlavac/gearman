@@ -2,6 +2,9 @@
 namespace MHlavac\Gearman\tests;
 
 use MHlavac\Gearman\Client;
+use MHlavac\Gearman\Connection;
+use MHlavac\Gearman\Exception;
+use Symfony\Component\Process\Process;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,21 +16,24 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->client = new Client();
+        $this->client->addServer();
     }
 
     public function testClient()
     {
-        return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
+        $process = new Process("gearman -w -f replace -- sed 's/__replace__/the best/g'");
+        $process->start();
+        try {
+            $this->assertEquals('php is the best', $this->client->doNormal('replace', 'php is __replace__'));
+            $this->assertEquals('php is the best', $this->client->doLow('replace', 'php is __replace__'));
+            $this->assertEquals('php is the best', $this->client->doHigh('replace', 'php is __replace__'));
+            $this->client->doBackground('replace', 'php is __replace__');
+            $this->client->doHighBackground('replace', 'php is __replace__');
+            $this->client->doLowBackground('replace', 'php is __replace__');
+        } catch (Exception\CouldNotConnectException $e) {
+            $this->markTestSkipped('Skipped, please start Gearman on port ' . Connection::DEFAULT_PORT . ' to be able to run this test');
+        }
 
-        $client = new Client();
-        $client->addServer();
-
-        echo $client->doNormal('replace', 'java is best programming language!');
-        echo $client->doLow('replace', 'java is best programming language!');
-        echo $client->doHigh('replace', 'java is best programming language!');
-
-        $client->doBackground('long_task', 'java java java java');
-        $client->doHighBackground('long_task', 'java java java java');
-        $client->doLowBackground('long_task', 'java java java java');
+        $process->stop();
     }
 }

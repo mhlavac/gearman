@@ -124,7 +124,7 @@ class Client implements ServerSetting
      */
     protected function getDefaultPort()
     {
-        return 4730;
+        return Connection::DEFAULT_PORT;
     }
 
     /**

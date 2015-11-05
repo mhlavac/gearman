@@ -80,7 +80,7 @@ class Manager
             list($host, $port) = explode(':', $server);
         } else {
             $host = $server;
-            $port = 4730;
+            $port = Connection::DEFAULT_PORT;
         }
 
         $errCode = 0;

@@ -18,11 +18,10 @@ namespace MHlavac\Gearman;
  * @copyright 2007-2008 Digg.com, Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  *
- * @version   CVS: $Id$
- *
  * @link      http://pear.php.net/package/Net_Gearman
  * @link      http://www.danga.com/gearman/
  */
+use MHlavac\Gearman\Exception\CouldNotConnectException;
 
 /**
  * The base connection class.
@@ -80,6 +79,8 @@ class Connection
         'error' => array(19, array('err_code', 'err_text')),
         'all_yours' => array(24, array()),
     );
+
+    const DEFAULT_PORT = 4730;
 
     /**
      * The reverse of MHlavac\Gearman\Connection::$commands.
@@ -148,7 +149,7 @@ class Connection
 
         $err = '';
         $errno = 0;
-        $port = 4730;
+        $port = self::DEFAULT_PORT;
 
         if (strpos($host, ':')) {
             list($host, $port) = explode(':', $host);
@@ -168,7 +169,7 @@ class Connection
         if (!$socket_connected) {
             $errno = socket_last_error($socket);
             $errstr = socket_strerror($errno);
-            throw new Exception(
+            throw new CouldNotConnectException(
                 "Can't connect to server ($errno: $errstr)"
             );
         }
