@@ -247,6 +247,33 @@ class Client implements ServerSetting
     }
 
     /**
+     * Runs multiple tasks in a single call.
+     * 
+     * The index of the workload array is used an identifier for the task
+     *
+     * @param string $functionName
+     * @param array  $workload
+     * @param int    $type         Type of job to run task as
+     * @param int    $timeout      Time in seconds for the socket timeout. Max is 10 seconds
+     *
+     * @return array
+     */
+    public function doBatch($functionName, array $workload, $type = Task::JOB_NORMAL, $timeout = null)
+    {
+        $set = null;
+        foreach ($workload as $unique => $work) {
+            if (is_null($set)) {
+                $set = $this->createSet($functionName, $work, $unique, $type);
+            } else {
+                $task = new Task($functionName, $work, $unique, $type);
+                $set->addTask($task);
+            }
+        }
+        $this->runSet($set, $timeout);
+        return $set->tasks;
+    }
+
+    /**
      * Schedule a background task, returning a job handle which can be used
      * to get the status of the running task.
      *

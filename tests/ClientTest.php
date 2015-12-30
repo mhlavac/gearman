@@ -30,6 +30,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->client->doBackground('replace', 'php is __replace__');
             $this->client->doHighBackground('replace', 'php is __replace__');
             $this->client->doLowBackground('replace', 'php is __replace__');
+            $tasks = $this->client->doBatch('replace', [6 => 'php is __replace__', 7 => 'php is really __replace__']);
+            $this->assertEquals('php is the best', $tasks[6]->result);
+            $this->assertEquals('php is really the best', $tasks[7]->result);
         } catch (Exception\CouldNotConnectException $e) {
             $this->markTestSkipped('Skipped, please start Gearman on port ' . Connection::DEFAULT_PORT . ' to be able to run this test');
         }
