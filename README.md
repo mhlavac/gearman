@@ -19,7 +19,7 @@ Add following line to your composer.json
 
 You can use following command
 ``` sh
-composer.phar require --dev mhlavac/geaman:dev
+composer.phar require --dev mhlavac/gearman:dev
 ```
 
 Examples
