@@ -306,9 +306,8 @@ class Connection
             if (!self::stringLength($return['err_text'])) {
                 $return['err_text'] = 'Unknown error; see error code.';
             }
-
             throw new Exception(
-                $return['err_text'], $return['err_code']
+                $return['err_text'], (is_numeric($return['err_code']) ? $return['err_code'] : null)
             );
         }
 
