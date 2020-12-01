@@ -1,4 +1,5 @@
 {
+    "abandoned": true,
     "name": "mhlavac/gearman",
     "type": "library",
     "description": "Gearman (http://www.danga.com/gearman) is a system to farm out work to other machines. It can load balance function calls to lots of machines and allows you to call functions between languages. It can also run all function calls in parallel.",
@@ -9,6 +10,7 @@
             "homepage": "http://pear.php.net/user/till"
         },
         {
+
             "name": "Brian L. Moon",
             "homepage": "http://pear.php.net/user/brianlmoon"
         },
