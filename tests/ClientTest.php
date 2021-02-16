@@ -23,6 +23,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $process = new Process("gearman -w -f replace -- sed 's/__replace__/the best/g'");
         $process->start();
+        var_dump($process->getStatus());
+        die;
         try {
             $this->assertEquals('php is the best', $this->client->doNormal('replace', 'php is __replace__'));
             $this->assertEquals('php is the best', $this->client->doLow('replace', 'php is __replace__'));
